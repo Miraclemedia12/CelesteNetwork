@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CELESTE - Login & Sign Up</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;800&display=swap');
+
+        body { 
+            font-family: 'Plus Jakarta Sans', sans-serif; 
+            background: radial-gradient(circle at top right, #003311 0%, #001a09 40%, #000000 100%);
+            display: flex; 
+            justify-content: center; 
+            align-items: center; 
+            height: 100vh; 
+            margin: 0; 
+            color: white;
+            overflow: hidden;
+        }
+
+        .auth-container { 
+            background: rgba(0, 0, 0, 0.6); 
+            padding: 40px 30px; 
+            border-radius: 24px; 
+            box-shadow: 0 20px 50px rgba(0, 255, 85, 0.1); 
+            width: 100%; 
+            max-width: 400px; 
+            text-align: center; 
+            border: 1px solid rgba(0, 255, 85, 0.15);
+            backdrop-filter: blur(15px);
+        }
+
+        h2 { 
+            color: #00ff55; 
+            font-size: 38px; 
+            font-weight: 800; 
+            margin-bottom: 8px; 
+            letter-spacing: -1px;
+            text-transform: uppercase;
+        }
+
+        p { color: #88aa99; margin-bottom: 35px; font-size: 15px; font-weight: 500; }
+        
+        .input-group { margin-bottom: 20px; text-align: left; }
+        label { display: block; margin-bottom: 8px; font-size: 12px; color: #00ff55; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; }
+        
+        input { 
+            width: 100%; 
+            padding: 16px; 
+            border: 1px solid rgba(0, 255, 85, 0.2); 
+            border-radius: 14px; 
+            background: rgba(0, 40, 20, 0.4); 
+            color: white; 
+            font-size: 16px;
+            box-sizing: border-box;
+            outline: none;
+            transition: all 0.3s ease;
+        }
+
+        input::placeholder { color: rgba(255, 255, 255, 0.3); }
+        input:focus { 
+            background: rgba(0, 60, 30, 0.6); 
+            border-color: #00ff55;
+            box-shadow: 0 0 15px rgba(0, 255, 85, 0.2); 
+        }
+        
+        button { 
+            width: 100%; 
+            padding: 18px; 
+            border: none; 
+            border-radius: 14px; 
+            cursor: pointer; 
+            font-weight: 800; 
+            font-size: 16px;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); 
+            margin-top: 10px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .btn-login { 
+            background: #00ff55; 
+            color: #000; 
+            box-shadow: 0 8px 20px rgba(0, 255, 85, 0.3);
+        }
+
+        .btn-login:hover { 
+            background: #00cc44;
+            transform: translateY(-3px); 
+            box-shadow: 0 12px 30px rgba(0, 255, 85, 0.5); 
+        }
+        
+        .btn-signup { 
+            background: transparent; 
+            color: #00ff55; 
+            border: 2px solid #00ff55; 
+            margin-top: 15px;
+        }
+
+        .btn-signup:hover { 
+            background: rgba(0, 255, 85, 0.05);
+            border-color: #00cc44;
+            color: #00cc44;
+        }
+        
+        #message { margin-top: 20px; font-size: 14px; min-height: 20px; font-weight: 600; }
+    </style>
+</head>
+<body>
+
+    <div class="auth-container">
+        <h2>CELESTE</h2>
+        <p>Elite financial rewards system.</p>
+        
+        <div class="input-group">
+            <label>Email Address</label>
+            <input type="email" id="email" placeholder="name@domain.com">
+        </div>
+
+        <div class="input-group">
+            <label>Password</label>
+            <input type="password" id="password" placeholder="••••••••">
+        </div>
+        
+        <button id="loginBtn" class="btn-login" onclick="login()">Login</button>
+        <button id="signupBtn" class="btn-signup" onclick="signUp()">Create Account</button>
+        
+        <div id="message"></div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    
+    <script>
+        // Your Verified Credentials
+        const SUPABASE_URL = 'https://gbmpenlojubfkvqeyxkh.supabase.co'; 
+        const SUPABASE_KEY = 'sb_publishable_rYaNpJ5Ngw35pxv4TFmXQw_6-LrYGo-';
+        
+        const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+        async function signUp() {
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+            const messageDiv = document.getElementById('message');
+            
+            if(!email || !password) {
+                messageDiv.style.color = "#ff4444";
+                messageDiv.innerText = "All fields required.";
+                return;
+            }
+
+            const { data, error } = await supabaseClient.auth.signUp({ email, password });
+            
+            if (error) {
+                messageDiv.style.color = "#ff4444";
+                messageDiv.innerText = error.message;
+            } else {
+                messageDiv.style.color = "#00ff55";
+                messageDiv.innerText = "Access granted. Check your inbox to verify.";
+            }
+        }
+
+        async function login() {
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+            const messageDiv = document.getElementById('message');
+            const loginBtn = document.getElementById('loginBtn');
+
+            if(!email || !password) {
+                messageDiv.style.color = "#ff4444";
+                messageDiv.innerText = "Enter credentials.";
+                return;
+            }
+
+            loginBtn.innerText = "Authenticating...";
+            loginBtn.style.opacity = "0.7";
+
+            const { data, error } = await supabaseClient.auth.signInWithPassword({ email, password });
+
+            if (error) {
+                loginBtn.innerText = "Enter Portal";
+                loginBtn.style.opacity = "1";
+                messageDiv.style.color = "#ff4444";
+                messageDiv.innerText = error.message;
+            } else {
+                messageDiv.style.color = "#00ff55";
+                messageDiv.innerText = "Identity Verified. Initializing...";
+                setTimeout(() => {
+                    // This redirects to your dashboard page
+                    window.location.href = 'reward.html';
+                }, 1500);
+            }
+        }
+    </script>
+</body>
+</html>
+
