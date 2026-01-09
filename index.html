@@ -71,6 +71,16 @@
         const SUPABASE_KEY = 'sb_publishable_rYaNpJ5Ngw35pxv4TFmXQw_6-LrYGo-';
         const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
+        // This checks if the user just verified their email
+        window.onload = function() {
+            const messageDiv = document.getElementById('message');
+            // If the URL contains "access_token", it means they clicked the email link
+            if (window.location.hash.includes("access_token") || window.location.href.includes("type=signup")) {
+                messageDiv.style.color = "#00ff55";
+                messageDiv.innerText = "Email Verified! Please sign in to enter.";
+            }
+        }
+
         async function login() {
             const email = document.getElementById('email').value;
             const password = document.getElementById('password').value;
