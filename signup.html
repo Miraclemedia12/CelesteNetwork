@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CELESTE - Join the Elite</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;800&display=swap');
+        body { 
+            font-family: 'Plus Jakarta Sans', sans-serif; 
+            background: radial-gradient(circle at top right, #003311 0%, #001a09 40%, #000000 100%);
+            display: flex; justify-content: center; align-items: center; min-height: 100vh; margin: 0; color: white; padding: 20px;
+        }
+        .auth-container { 
+            background: rgba(0, 0, 0, 0.6); padding: 40px 30px; border-radius: 24px; 
+            box-shadow: 0 20px 50px rgba(0, 255, 85, 0.1); width: 100%; max-width: 420px; 
+            border: 1px solid rgba(0, 255, 85, 0.15); backdrop-filter: blur(15px);
+        }
+        h2 { color: #00ff55; font-size: 32px; font-weight: 800; margin-bottom: 25px; text-align: center; text-transform: uppercase; }
+        .input-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
+        .full-width { grid-column: span 2; }
+        .input-group { margin-bottom: 15px; text-align: left; }
+        label { display: block; margin-bottom: 6px; font-size: 11px; color: #00ff55; font-weight: 700; text-transform: uppercase; }
+        input { 
+            width: 100%; padding: 14px; border: 1px solid rgba(0, 255, 85, 0.2); border-radius: 12px; 
+            background: rgba(0, 40, 20, 0.4); color: white; font-size: 14px; box-sizing: border-box; outline: none;
+        }
+        input:focus { border-color: #00ff55; background: rgba(0, 60, 30, 0.6); }
+        .btn-reg { 
+            width: 100%; padding: 18px; border: none; border-radius: 14px; cursor: pointer; 
+            font-weight: 800; background: #00ff55; color: #000; text-transform: uppercase; margin-top: 15px;
+        }
+        #message { margin-top: 15px; font-size: 13px; text-align: center; font-weight: 600; }
+        .footer-links { margin-top: 20px; text-align: center; font-size: 14px; color: #668877; }
+        .footer-links a { color: #00ff55; text-decoration: none; font-weight: bold; }
+    </style>
+</head>
+<body>
+    <div class="auth-container">
+        <h2>JOIN CELESTE</h2>
+        <div class="input-grid">
+            <div class="input-group full-width"><label>Full Name</label><input type="text" id="fullName" placeholder="Full Name"></div>
+            <div class="input-group"><label>Username</label><input type="text" id="username" placeholder="Username"></div>
+            <div class="input-group"><label>Phone</label><input type="tel" id="phone" placeholder="Phone Number"></div>
+            <div class="input-group full-width"><label>Email Address</label><input type="email" id="email" placeholder="Email"></div>
+            <div class="input-group full-width"><label>Password</label><input type="password" id="password" placeholder="••••••••"></div>
+        </div>
+        <button class="btn-reg" id="regBtn" onclick="handleSignUp()">Begin Registration</button>
+        <div id="message"></div>
+        <div class="footer-links">
+            Already a member? <a href="index.html">Sign In</a>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script>
+        const SUPABASE_URL = 'https://gbmpenlojubfkvqeyxkh.supabase.co'; 
+        const SUPABASE_KEY = 'sb_publishable_rYaNpJ5Ngw35pxv4TFmXQw_6-LrYGo-';
+        const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+        async function handleSignUp() {
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+            const fullName = document.getElementById('fullName').value;
+            const username = document.getElementById('username').value;
+            const phone = document.getElementById('phone').value;
+            const messageDiv = document.getElementById('message');
+            const regBtn = document.getElementById('regBtn');
+
+            if(!email || !password) {
+                messageDiv.style.color = "#ff4444";
+                messageDiv.innerText = "Email and Password are required.";
+                return;
+            }
+
+            regBtn.innerText = "Creating Account...";
+            
+            const { data, error } = await supabaseClient.auth.signUp({
+                email, password,
+                options: { data: { full_name: fullName, user_name: username, phone_number: phone } }
+            });
+
+            if (error) {
+                regBtn.innerText = "Begin Registration";
+                messageDiv.style.color = "#ff4444";
+                messageDiv.innerText = error.message;
+            } else {
+                messageDiv.style.color = "#00ff55";
+                messageDiv.innerText = "Success! Entering Portal...";
+                // Direct redirect to the dashboard
+                setTimeout(() => {
+                    window.location.href = 'reward.html';
+                }, 1500);
+            }
+        }
+    </script>
+</body>
+</html>
+
