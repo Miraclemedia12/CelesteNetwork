@@ -59,53 +59,36 @@
         const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
         async function handleSignUp() {
-            const email = document.getElementById('email').value;
-            const password = document.getElementById('password').value;
-            const fullName = document.getElementById('fullName').value;
-            const messageDiv = document.getElementById('message');
-            const regBtn = document.getElementById('regBtn');
+    const email = document.getElementById('email').value;
+    const password = document.getElementById('password').value;
+    const messageDiv = document.getElementById('message');
+    const regBtn = document.getElementById('regBtn');
 
-            if(!email || !password) {
-                messageDiv.style.color = "#ff4444";
-                messageDiv.innerText = "Email and Password are required.";
-                return;
-            }
+    if(!email || !password) {
+        messageDiv.innerText = "Email and Password are required.";
+        return;
+    }
 
-            regBtn.innerText = "Creating Account...";
-            
-            // 1. Sign up user in Auth
-            const { data, error } = await supabaseClient.auth.signUp({
-                email, password
-            });
+    regBtn.innerText = "Processing...";
+    
+    // Only create the Auth Login. The SQL Trigger we ran 
+    // in Step 1 will handle the profile table automatically.
+    const { data, error } = await supabaseClient.auth.signUp({
+        email: email,
+        password: password
+    });
 
-            if (error) {
-                regBtn.innerText = "REGISTER";
-                messageDiv.style.color = "#ff4444";
-                messageDiv.innerText = error.message;
-            } else if (data.user) {
-                // 2. IMMEDIATELY create their money profile
-                const { error: profileError } = await supabaseClient
-                    .from('profiles')
-                    .insert([
-                        { 
-                            id: data.user.id, 
-                            balance: 14000, 
-                            v_done: false, 
-                            tax_claimed: false, // matches your column
-                            is_premium: false 
-                        }
-                    ]);
+    if (error) {
+        regBtn.innerText = "REGISTER";
+        messageDiv.style.color = "#ff4444";
+        messageDiv.innerText = error.message;
+    } else {
+        messageDiv.style.color = "#00ff55";
+        messageDiv.innerText = "Success! Redirecting...";
+        setTimeout(() => { window.location.href = 'reward.html'; }, 2000);
+    }
+}
 
-                if (profileError) {
-                    messageDiv.style.color = "#ff4444";
-                    messageDiv.innerText = "Profile error. Contact Admin.";
-                    console.log(profileError);
-                } else {
-                    messageDiv.style.color = "#00ff55";
-                    messageDiv.innerText = "Success! Entering Portal...";
-                    setTimeout(() => { window.location.href = 'reward.html'; }, 1500);
-                }
-            }
         }
     </script>
 </body>
