@@ -3,24 +3,47 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Celeste Dashboard</title>
+    <title>Celeste Dashboard | Rewards</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         :root {
-            --neon: #00ff66;
+            --neon: #00ff55;
             --bg: #000000;
             --card: #0a0a0a;
             --text: #ffffff;
+            --soft-text: #888888;
         }
+
+        * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
 
         body {
             font-family: 'Inter', sans-serif;
             background-color: var(--bg);
             color: var(--text);
-            margin: 0; padding: 15px;
+            margin: 0;
+            padding: 15px;
+            padding-bottom: 120px;
             overflow-x: hidden;
-            padding-bottom: 100px;
         }
+
+        /* --- UPGRADE MODAL --- */
+        #upgradeModal {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.95); display: none; align-items: center;
+            justify-content: center; z-index: 5000; padding: 20px;
+        }
+        .modal-box {
+            background: #0d0d0d; border: 1px solid var(--neon);
+            padding: 30px 20px; border-radius: 25px; width: 100%; max-width: 350px;
+            text-align: center; box-shadow: 0 0 30px rgba(0, 255, 85, 0.2);
+        }
+        .m-btn-up { 
+            background: var(--neon); color: #000; border: none; width: 100%; 
+            padding: 15px; border-radius: 12px; font-weight: 800; margin-bottom: 10px; 
+            cursor: pointer; display: block; text-decoration: none; text-transform: uppercase; 
+            font-size: 14px;
+        }
+        .m-btn-back { background: transparent; color: #fff; border: 1px solid #333; width: 100%; padding: 12px; border-radius: 12px; cursor: pointer; }
 
         /* --- SIDEBAR --- */
         .sidebar {
@@ -30,207 +53,223 @@
         }
         .sidebar.active { left: 0; }
         .sidebar a { display: block; color: white; padding: 15px 0; text-decoration: none; border-bottom: 1px solid #111; }
-
-        .overlay {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0,0,0,0.85); display: none; z-index: 2500;
-        }
+        .overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); display: none; z-index: 2500; }
         .overlay.active { display: block; }
 
         /* --- HEADER --- */
-        .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px; }
-        .menu-btn { font-size: 26px; color: var(--neon); cursor: pointer; }
+        .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px; padding-top: 10px; }
+        .left-header { display: flex; align-items: center; gap: 12px; }
+        .menu-btn { font-size: 24px; color: var(--neon); cursor: pointer; }
+        .support-btn { 
+            font-size: 20px; color: var(--neon); cursor: pointer; 
+            background: rgba(0, 255, 85, 0.1); width: 38px; height: 38px; 
+            display: flex; align-items: center; justify-content: center; border-radius: 50%;
+            text-decoration: none;
+        }
+        .user-info { display: flex; align-items: center; gap: 10px; }
+        .initials { width: 35px; height: 35px; background: var(--neon); color: #000; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 800; }
 
-        /* --- EARNINGS CARD --- */
+        /* --- BALANCE --- */
         .balance-box {
-            background: linear-gradient(145deg, #062012, #000000);
-            padding: 30px 20px; border-radius: 20px; text-align: center;
-            border: 1px solid var(--neon); margin-bottom: 30px;
+            background: linear-gradient(145deg, #001a08, #000000);
+            padding: 25px; border-radius: 24px; border: 1px solid rgba(0, 255, 85, 0.2);
+            margin-bottom: 25px; position: relative;
         }
-        .balance-box h1 { color: var(--neon); margin: 10px 0; font-size: 36px; }
-        
-        .currency-switch {
-            display: inline-flex; align-items: center; gap: 8px;
-            background: rgba(0, 255, 102, 0.1); padding: 8px 16px;
-            border-radius: 50px; border: 1px solid var(--neon);
-            color: var(--neon); cursor: pointer; font-size: 13px;
-        }
+        .plan-pill { position: absolute; top: 25px; right: 25px; background: rgba(0,255,85,0.1); color: var(--neon); border: 1px solid var(--neon); padding: 4px 10px; border-radius: 4px; font-size: 10px; font-weight: 800; }
+        .balance-box h1 { color: var(--neon); margin: 5px 0 15px 0; font-size: 34px; font-weight: 800; }
+        .switch-btn { background: rgba(0,255,85,0.1); border: 1px solid var(--neon); color: var(--neon); padding: 8px 15px; border-radius: 50px; font-size: 11px; cursor: pointer; font-weight: 700; display: inline-flex; align-items: center; gap: 8px; }
 
-        .timer-label { font-size: 11px; margin-top: 15px; font-weight: bold; }
-
-        /* --- QUICK TASKS ROW --- */
-        .task-row {
-            display: flex; overflow-x: auto; gap: 20px;
-            padding-bottom: 20px; scrollbar-width: none;
-        }
-        .task-row::-webkit-scrollbar { display: none; }
+        /* --- TASKS --- */
+        .section-title { font-weight: 700; font-size: 17px; color: #fff; margin-bottom: 15px; }
+        .task-row { display: flex; overflow-x: auto; gap: 20px; padding-bottom: 20px; scrollbar-width: none; }
         .task-item { text-align: center; flex: 0 0 auto; width: 85px; cursor: pointer; }
-        .circle-wrap {
-            width: 68px; height: 68px; border-radius: 50%; border: 2px solid var(--neon);
-            display: flex; align-items: center; justify-content: center; margin: 0 auto 10px;
-        }
-        .circle-wrap i { font-size: 26px; color: var(--neon); }
-        .counter { font-size: 10px; color: var(--neon); font-weight: 700; display: block; }
+        .circle-wrap { width: 68px; height: 68px; border-radius: 50%; border: 1px solid var(--neon); display: flex; align-items: center; justify-content: center; margin: 0 auto 10px; position: relative; background: rgba(0,255,85,0.03); }
+        .circle-wrap i { font-size: 24px; color: var(--neon); }
+        .locked { opacity: 0.4; border-style: dashed; }
+        .lock-tag { position: absolute; top: -5px; right: -5px; background: #000; border: 1px solid #333; width: 20px; height: 20px; border-radius: 50%; font-size: 10px; color: #ffcc00; display: flex; align-items: center; justify-content: center; }
 
-        /* --- UPGRADE POPUP --- */
-        #upgradePopup {
-            position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%);
-            background: var(--card); border: 2px solid var(--neon);
-            padding: 30px 20px; border-radius: 20px; width: 85%;
-            display: none; z-index: 4000; text-align: center;
-        }
-        .btn-main { background: var(--neon); color: black; border: none; padding: 15px; border-radius: 10px; font-weight: 800; width: 100%; cursor: pointer; margin-top: 20px; }
-        .btn-secondary { background: transparent; color: white; border: 1px solid #333; padding: 12px; border-radius: 10px; width: 100%; cursor: pointer; margin-top: 10px; }
+        /* --- PERFORMANCE --- */
+        .p-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 25px; }
+        .stat-card { background: #0f0f0f; border: 1px solid #222; padding: 15px; border-radius: 18px; }
 
-        /* --- BOTTOM NAV --- */
-        .bottom-nav {
-            position: fixed; bottom: 0; left: 0; right: 0;
-            background: #050505; display: flex; justify-content: space-around;
-            padding: 15px 5px; border-top: 1px solid #1a1a1a;
-        }
+        /* --- TRANSACTIONS --- */
+        .tx-list { display: flex; flex-direction: column; gap: 12px; }
+        .tx-card { background: #0f0f0f; border: 1px solid #222; padding: 15px; border-radius: 20px; display: flex; align-items: center; justify-content: space-between; }
+        .tx-icon { width: 45px; height: 45px; border-radius: 12px; background: rgba(0,255,85,0.1); display: flex; align-items: center; justify-content: center; color: var(--neon); }
+
+        /* --- NAV --- */
+        .bottom-nav { position: fixed; bottom: 0; left: 0; right: 0; background: #050505; display: flex; justify-content: space-around; padding: 15px 5px; border-top: 1px solid #1a1a1a; z-index: 2000; }
         .nav-link { color: #555; text-decoration: none; font-size: 11px; text-align: center; }
-        .upgrade-pill { background: var(--neon); color: black !important; padding: 10px 18px; border-radius: 8px; font-weight: 800; }
+        .nav-link i { font-size: 22px; margin-bottom: 5px; display: block; }
+        .upgrade-pill { background: var(--neon); color: #000 !important; padding: 10px 18px; border-radius: 8px; font-weight: 800; margin-top: -5px; }
     </style>
 </head>
 <body>
 
+    <!-- Upgrade Modal (Clicking button takes user to upgrade.html) -->
+    <div id="upgradeModal">
+        <div class="modal-box">
+            <i class="fas fa-lock" style="font-size: 40px; color: var(--neon); margin-bottom: 15px;"></i>
+            <h2 style="color: #fff; margin-bottom: 10px;">Premium Task</h2>
+            <p style="color: #888; margin-bottom: 20px; font-size: 14px;">Upgrade your plan to unlock TikTok, Twitter, and Casino tasks and increase your daily earnings!</p>
+            <a href="upgrade.html" class="m-btn-up">Upgrade Plan Now</a>
+            <button class="m-btn-back" onclick="closeModal()">Close</button>
+        </div>
+    </div>
+
     <div class="overlay" id="overlay" onclick="closeAll()"></div>
     
     <div class="sidebar" id="sidebar">
-        <h2 style="color:var(--neon)">CELESTE</h2>
-        <a href="profile.html">Profile</a>
-        <a href="how-it-works.html">How it Works</a>
-        <a href="withdraw.html">Withdrawal</a>
-        <a href="index.html" style="color:red;">Logout</a>
+        <h2>CELESTE MENU</h2>
+        <a href="profile.html"><i class="fas fa-user-circle"></i> Profile</a>
+        <a href="withdraw.html"><i class="fas fa-wallet"></i> Withdrawal</a>
+        <a href="upgrade.html"><i class="fas fa-arrow-circle-up"></i> Upgrade</a>
+        <a href="support.html"><i class="fas fa-headset"></i> Support</a>
+        <a href="index.html" style="color: #ff4444;"><i class="fas fa-sign-out-alt"></i> Logout</a>
     </div>
 
     <div class="header">
-        <i class="fas fa-bars menu-btn" onclick="openSidebar()"></i>
-        <div>Welcome, <b id="displayUser" style="color: var(--neon);">Investor</b></div>
-        <div style="width:35px; height:35px; background:var(--neon); border-radius:50%;"></div>
+        <div class="left-header">
+            <i class="fas fa-bars menu-btn" onclick="openSidebar()"></i>
+            <!-- Support Icon linked to support.html -->
+            <a href="support.html" class="support-btn"><i class="fas fa-headset"></i></a>
+        </div>
+        <div class="user-info">
+            <span style="font-size: 13px;">Welcome back, <b id="userName" style="color: var(--neon);">Investor</b></span>
+            <div class="initials" id="userInit">I</div>
+        </div>
     </div>
 
     <div class="balance-box">
-        <p style="font-size:12px; color:#888;">AVAILABLE BALANCE</p>
-        <h1 id="balanceText">₦14,000.00</h1>
-        
-        <div class="currency-switch" onclick="toggleCurrency()">
-            <span id="curLabel">Naira</span> <i class="fas fa-sync-alt"></i>
-        </div>
-
-        <div class="timer-label" id="statusLabel" style="color: var(--neon);">2 DAYS REMAINING</div>
+        <div class="plan-pill">Free Plan</div>
+        <p style="font-size: 10px; color: var(--soft-text); letter-spacing: 1px;">AVAILABLE BALANCE</p>
+        <h1 id="balTxt">₦14,000.00</h1>
+        <div class="switch-btn" onclick="toggleCur()"><span id="curLabel">NAIRA</span> <i class="fas fa-sync-alt"></i></div>
     </div>
 
-    <p style="font-weight: bold; margin-bottom: 15px;">Quick Tasks</p>
+    <div class="section-title">Earning Tasks</div>
     <div class="task-row">
-        <div class="task-item" onclick="taskLogic('watch')">
+        <!-- Working Tasks -->
+        <div class="task-item" onclick="window.location.href='watch.html'">
             <div class="circle-wrap"><i class="fas fa-play"></i></div>
-            <span>Watch</span>
-            <span class="counter" id="watchProgress">0/2</span>
+            <span class="task-name">Watch videos</span>
         </div>
-        <div class="task-item" onclick="taskLogic('tele')">
+        <div class="task-item" onclick="window.location.href='telegram.html'">
             <div class="circle-wrap"><i class="fab fa-telegram-plane"></i></div>
-            <span>Telegram</span>
-            <span class="counter" id="teleProgress">0/2</span>
+            <span class="task-name">Telegram</span>
         </div>
-        <div class="task-item" onclick="showPop('TikTok')">
-            <div class="circle-wrap" style="opacity:0.3;"><i class="fab fa-tiktok"></i></div>
-            <span>TikTok</span>
+        <!-- Locked Tasks that trigger the modal -->
+        <div class="task-item" onclick="showPop()">
+            <div class="circle-wrap locked"><i class="fab fa-tiktok"></i><div class="lock-tag"><i class="fas fa-lock"></i></div></div>
+            <span class="task-name">TikTok</span>
         </div>
-        <div class="task-item" onclick="showPop('Twitter')">
-            <div class="circle-wrap" style="opacity:0.3;"><i class="fab fa-twitter"></i></div>
-            <span>Twitter</span>
+        <div class="task-item" onclick="showPop()">
+            <div class="circle-wrap locked"><i class="fab fa-twitter"></i><div class="lock-tag"><i class="fas fa-lock"></i></div></div>
+            <span class="task-name">Twitter</span>
+        </div>
+        <div class="task-item" onclick="showPop()">
+            <div class="circle-wrap locked"><i class="fas fa-dice"></i><div class="lock-tag"><i class="fas fa-lock"></i></div></div>
+            <span class="task-name">Casino</span>
         </div>
     </div>
 
-    <div id="upgradePopup">
-        <h3 style="color:var(--neon); margin:0;">Access Restricted</h3>
-        <p id="popMsg" style="color:#bbb; font-size:14px; margin-top:15px;">Can't access this feature. Upgrade your current plan to access this feature.</p>
-        <button class="btn-main" onclick="window.location.href='upgrade.html'">Upgrade Now</button>
-        <button class="btn-secondary" onclick="closeAll()">Back</button>
+    <div class="section-title">Performance</div>
+    <div class="p-grid">
+        <div class="stat-card">
+            <span style="font-size: 10px; color: var(--soft-text);">VIDEO WATCHED</span>
+            <div id="vProg" style="font-size: 18px; font-weight: 800; color: var(--neon); margin-top: 5px;">0 / 1</div>
+        </div>
+        <div class="stat-card">
+            <span style="font-size: 10px; color: var(--soft-text);">ENGAGEMENTS</span>
+            <div id="tProg" style="font-size: 18px; font-weight: 800; color: var(--neon); margin-top: 5px;">0 / 2</div>
+        </div>
+    </div>
+
+    <div class="section-title">Recent Transactions</div>
+    <div class="tx-list" id="txContainer">
+        <!-- History will load here -->
+        <div class="tx-card">
+            <div style="display: flex; align-items: center; gap: 12px;">
+                <div class="tx-icon"><i class="fas fa-gift"></i></div>
+                <div>
+                    <span style="font-size: 13px; font-weight: 700; display: block;">Registration Cashback</span>
+                    <span style="font-size: 10px; color: var(--soft-text);">Welcome bonus credited from Celeste</span>
+                </div>
+            </div>
+            <div class="tx-amt-val" data-base="14000" style="color: var(--neon); font-size: 13px; font-weight: 800;">+₦14,000.00</div>
+        </div>
     </div>
 
     <nav class="bottom-nav">
-        <a href="how-it-works.html" class="nav-link"><i class="fas fa-home"></i><br>Home</a>
-        <a href="withdraw.html" class="nav-link"><i class="fas fa-wallet"></i><br>Withdraw</a>
-        <a href="upgrade.html" class="nav-link upgrade-pill" style="margin-top:-5px; display:flex; align-items:center;">UPGRADE</a>
-        <a href="profile.html" class="nav-link"><i class="fas fa-user-circle"></i><br>Profile</a>
+        <a href="reward.html" class="nav-link" style="color: var(--neon);"><i class="fas fa-home"></i>Home</a>
+        <a href="withdraw.html" class="nav-link"><i class="fas fa-wallet"></i>Withdraw</a>
+        <a href="upgrade.html" class="nav-link upgrade-pill">UPGRADE</a>
+        <a href="profile.html" class="nav-link"><i class="fas fa-user-circle"></i>Profile</a>
     </nav>
 
     <script>
-        let currentBalance = 14000;
-        let isNaira = true;
-        let watchDone = parseInt(localStorage.getItem('watch_done')) || 0;
-        let teleDone = parseInt(localStorage.getItem('tele_done')) || 0;
-        let isExpired = false;
+        let balance = parseFloat(localStorage.getItem('celeste_bal')) || 14000;
+        let isNaira = localStorage.getItem('isNaira') !== 'false'; 
 
-        // 1. NAIRA / EURO SWITCHER
-        function toggleCurrency() {
-            const balH1 = document.getElementById('balanceText');
-            const lbl = document.getElementById('curLabel');
+        function updateDisplay() {
+            const bTxt = document.getElementById('balTxt');
+            const label = document.getElementById('curLabel');
+            
             if(isNaira) {
-                balH1.innerText = "€" + (currentBalance / 2000).toFixed(2);
-                lbl.innerText = "Euro";
+                bTxt.innerText = "₦" + balance.toLocaleString(undefined, {minimumFractionDigits: 2});
+                label.innerText = "NAIRA";
             } else {
-                balH1.innerText = "₦" + currentBalance.toLocaleString();
-                lbl.innerText = "Naira";
+                bTxt.innerText = "€" + (balance / 2000).toLocaleString(undefined, {minimumFractionDigits: 2});
+                label.innerText = "EURO";
             }
+
+            document.querySelectorAll('.tx-amt-val').forEach(el => {
+                let base = parseFloat(el.getAttribute('data-base'));
+                el.innerText = isNaira ? "+₦" + base.toLocaleString() : "+€" + (base / 2000).toFixed(2);
+            });
+
+            document.getElementById('vProg').innerText = (localStorage.getItem('v_done') || 0) + " / 1";
+            document.getElementById('tProg').innerText = (localStorage.getItem('t_done') || 0) + " / 2";
+        }
+
+        function toggleCur() {
             isNaira = !isNaira;
+            localStorage.setItem('isNaira', isNaira);
+            updateDisplay();
         }
 
-        // 2. TIMER LOGIC
-        function checkTimer() {
-            let signupDate = localStorage.getItem('signup_date');
-            if (!signupDate) {
-                signupDate = new Date().getTime();
-                localStorage.setItem('signup_date', signupDate);
-            }
-            const now = new Date().getTime();
-            const twoDays = 2 * 24 * 60 * 60 * 1000;
-            if (now > (parseInt(signupDate) + twoDays)) {
-                isExpired = true;
-                document.getElementById('statusLabel').innerText = "FREE PLAN EXPIRED";
-                document.getElementById('statusLabel').style.color = "#ff4444";
-            }
-        }
-
-        // 3. TASK LOGIC
-        function taskLogic(type) {
-            if (isExpired) {
-                showPop(type === 'watch' ? 'Watch Video' : 'Telegram Stream');
-                return;
-            }
-            if (type === 'watch') {
-                if (watchDone < 1) window.location.href = 'watch.html';
-                else showPop('Watch Video');
-            } else if (type === 'tele') {
-                if (teleDone < 2) window.location.href = 'telegram.html';
-                else showPop('Telegram');
-            }
-        }
-
-        function showPop(name) {
-            document.getElementById('popMsg').innerHTML = `Can't access this feature. <br> Upgrade your current plan to access <b>${name}</b>.`;
-            document.getElementById('upgradePopup').style.display = 'block';
-            document.getElementById('overlay').classList.add('active');
-        }
-
-        function closeAll() {
-            document.getElementById('upgradePopup').style.display = 'none';
-            document.getElementById('sidebar').classList.remove('active');
-            document.getElementById('overlay').classList.remove('active');
-        }
-
-        function openSidebar() {
-            document.getElementById('sidebar').classList.add('active');
-            document.getElementById('overlay').classList.add('active');
-        }
+        function showPop() { document.getElementById('upgradeModal').style.display = 'flex'; }
+        function closeModal() { document.getElementById('upgradeModal').style.display = 'none'; }
+        function openSidebar() { document.getElementById('sidebar').classList.add('active'); document.getElementById('overlay').classList.add('active'); }
+        function closeAll() { document.getElementById('sidebar').classList.remove('active'); document.getElementById('overlay').classList.remove('active'); closeModal(); }
 
         window.onload = function() {
-            checkTimer();
-            document.getElementById('watchProgress').innerText = watchDone + "/2";
-            document.getElementById('teleProgress').innerText = teleDone + "/2";
+            const user = localStorage.getItem('username') || "Investor";
+            document.getElementById('userName').innerText = user;
+            document.getElementById('userInit').innerText = user.charAt(0).toUpperCase();
+
+            let history = JSON.parse(localStorage.getItem('celeste_history') || "[]");
+            const container = document.getElementById('txContainer');
+            
+            history.forEach(tx => {
+                const card = document.createElement('div');
+                card.className = "tx-card";
+                card.innerHTML = `
+                    <div style="display: flex; align-items: center; gap: 12px;">
+                        <div class="tx-icon"><i class="fas fa-bolt"></i></div>
+                        <div>
+                            <span style="font-size: 13px; font-weight: 700; display: block;">${tx.title}</span>
+                            <span style="font-size: 10px; color: var(--soft-text);">${tx.desc}</span>
+                        </div>
+                    </div>
+                    <div class="tx-amt-val" data-base="${tx.amt}" style="color: var(--neon); font-size: 13px; font-weight: 800;">+₦${tx.amt.toLocaleString()}</div>
+                `;
+                container.prepend(card);
+            });
+
+            updateDisplay();
         };
     </script>
 </body>
 </html>
+
