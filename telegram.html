@@ -7,60 +7,35 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         :root { --neon: #00ff55; --tg-blue: #0088cc; --bg: #000000; --card: #0d0d0d; }
-        * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
-        body { background: var(--bg); color: #fff; font-family: 'Inter', sans-serif; margin: 0; padding: 20px; display: flex; flex-direction: column; align-items: center; min-height: 100vh; }
-        
-        .header { text-align: center; margin-bottom: 30px; }
-        .header h1 { font-size: 26px; font-weight: 900; color: var(--neon); }
-        .task-container { width: 100%; max-width: 420px; display: flex; flex-direction: column; gap: 20px; }
-
-        .task-card { background: var(--card); border: 1px solid #1a1a1a; border-radius: 24px; padding: 20px; position: relative; transition: 0.3s; }
-        .reward-badge { position: absolute; top: 0; right: 0; background: var(--neon); color: #000; padding: 5px 12px; font-size: 11px; font-weight: 800; border-bottom-left-radius: 12px; }
-
-        .task-header { display: flex; align-items: center; gap: 12px; margin-bottom: 10px; }
-        .icon-circle { width: 45px; height: 45px; background: rgba(0, 136, 204, 0.1); border-radius: 50%; display: flex; align-items: center; justify-content: center; color: var(--tg-blue); }
-        
-        .btn-action { display: block; width: 100%; padding: 15px; border-radius: 15px; border: none; font-weight: 800; text-transform: uppercase; text-align: center; text-decoration: none; cursor: pointer; font-size: 13px; transition: 0.2s; }
+        body { background: var(--bg); color: #fff; font-family: sans-serif; margin: 0; padding: 20px; text-align: center; }
+        .card { background: var(--card); border: 1px solid #222; border-radius: 20px; padding: 20px; margin-bottom: 20px; position: relative; }
+        .reward { position: absolute; top: 0; right: 0; background: var(--neon); color: #000; padding: 5px 10px; border-radius: 0 20px 0 20px; font-weight: bold; font-size: 12px; }
+        .btn { display: block; width: 100%; padding: 15px; border-radius: 12px; border: none; font-weight: bold; text-transform: uppercase; cursor: pointer; text-decoration: none; margin-top: 10px; }
         .btn-join { background: var(--tg-blue); color: #fff; }
         .btn-claim { background: var(--neon); color: #000; }
-        .btn-locked { background: #1a1a1a; color: #444; cursor: not-allowed; }
-        
+        .btn-locked { background: #333; color: #777; cursor: not-allowed; }
         .hidden { display: none; }
-        .loader { border: 2px solid rgba(255,255,255,0.2); border-top: 2px solid #fff; border-radius: 50%; width: 14px; height: 14px; animation: spin 0.8s linear infinite; display: inline-block; }
+        .loader { border: 2px solid #fff; border-top: 2px solid transparent; border-radius: 50%; width: 15px; height: 15px; animation: spin 1s linear infinite; display: inline-block; }
         @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
-        
-        .status-msg { font-size: 11px; color: #ff4444; margin-top: 10px; font-weight: 700; text-transform: uppercase; text-align: center; display: block; }
     </style>
 </head>
 <body>
 
-    <div class="header">
-        <h1>TELEGRAM TASKS</h1>
-        <p style="font-size: 12px; color: #666;">One task allowed per day</p>
+    <h2>Telegram Tasks</h2>
+    <p style="color: #888;">Complete one task every 24 hours.</p>
+
+    <div class="card" id="card1">
+        <div class="reward">₦2,000</div>
+        <h3>Official Channel</h3>
+        <a href="https://t.me/celesteofficial1" target="_blank" id="btn1" class="btn btn-join" onclick="startClaim(1)">Join Channel</a>
+        <button id="claim1" class="btn btn-claim hidden" onclick="finalize(1)">Claim ₦2,000</button>
     </div>
 
-    <div class="task-container">
-        <div class="task-card" id="card1">
-            <div class="reward-badge">₦2,000</div>
-            <div class="task-header">
-                <div class="icon-circle"><i class="fab fa-telegram-plane"></i></div>
-                <div><h3 style="margin:0; font-size:16px;">Official Channel</h3></div>
-            </div>
-            <a href="https://t.me/celesteofficial1" target="_blank" id="btn1" class="btn-action btn-join" onclick="showClaim(1)">Join Channel</a>
-            <button id="claim1" class="btn-action btn-claim hidden" onclick="processClaim(1)">Claim ₦2,000</button>
-            <span id="msg1" class="status-msg hidden">Task Completed</span>
-        </div>
-
-        <div class="task-card" id="card2">
-            <div class="reward-badge">₦2,000</div>
-            <div class="task-header">
-                <div class="icon-circle"><i class="fab fa-telegram-plane"></i></div>
-                <div><h3 style="margin:0; font-size:16px;">Community Hub</h3></div>
-            </div>
-            <a href="https://t.me/Animehub004" target="_blank" id="btn2" class="btn-action btn-join" onclick="showClaim(2)">Join Community</a>
-            <button id="claim2" class="btn-action btn-claim hidden" onclick="processClaim(2)">Claim ₦2,000</button>
-            <span id="msg2" class="status-msg hidden">Locked: Come back tomorrow</span>
-        </div>
+    <div class="card" id="card2">
+        <div class="reward">₦2,000</div>
+        <h3>Community Hub</h3>
+        <a href="https://t.me/Animehub004" target="_blank" id="btn2" class="btn btn-join" onclick="startClaim(2)">Join Community</a>
+        <button id="claim2" class="btn btn-claim hidden" onclick="finalize(2)">Claim ₦2,000</button>
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
@@ -69,74 +44,62 @@
         const SUPABASE_KEY = 'sb_publishable_S3ryEPuq04Bw8yJ3_LzmxA_qyVKpJPf';
         const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
-        let userProfile = null;
+        let profile = null;
 
         async function init() {
             const { data: { user } } = await supabaseClient.auth.getUser();
-            if(!user) { window.location.href='index.html'; return; }
-            const { data: profile } = await supabaseClient.from('profiles').select('*').eq('id', user.id).single();
-            userProfile = profile;
+            if(!user) return;
+            const { data } = await supabaseClient.from('profiles').select('*').eq('id', user.id).single();
+            profile = data;
 
-            enforceLock();
-        }
-
-        function enforceLock() {
-            const lastClaim = localStorage.getItem('last_tg_claim_date');
+            const lastClaim = localStorage.getItem('last_tg_date');
             const today = new Date().toDateString();
 
-            // 1. Handle Task 1
-            if (userProfile.t1_done) {
-                document.getElementById('btn1').className = "btn-action btn-locked";
-                document.getElementById('btn1').innerText = "Completed";
-                document.getElementById('btn1').onclick = (e) => e.preventDefault();
+            // Handle Task 1 locking
+            if (profile.t1_done) {
+                document.getElementById('btn1').innerText = "DONE ✅";
+                document.getElementById('btn1').classList.add('btn-locked');
+                document.getElementById('btn1').removeAttribute('href');
             }
 
-            // 2. Handle Task 2 (Only unlock if T1 is done AND it's a new day)
-            if (userProfile.t2_done) {
-                document.getElementById('btn2').className = "btn-action btn-locked";
-                document.getElementById('btn2').innerText = "Completed";
-                document.getElementById('btn2').onclick = (e) => e.preventDefault();
-            } else if (!userProfile.t1_done || lastClaim === today) {
-                // LOCK TASK 2 if T1 isn't done OR they already claimed something today
-                const btn2 = document.getElementById('btn2');
-                btn2.className = "btn-action btn-locked";
-                btn2.innerText = "Locked";
-                btn2.onclick = (e) => e.preventDefault();
-                if (userProfile.t1_done && lastClaim === today) {
-                    document.getElementById('msg2').classList.remove('hidden');
-                }
+            // Handle Task 2 locking (Locked if T1 not done OR if already claimed something today)
+            if (profile.t2_done) {
+                document.getElementById('btn2').innerText = "DONE ✅";
+                document.getElementById('btn2').classList.add('btn-locked');
+                document.getElementById('btn2').removeAttribute('href');
+            } else if (!profile.t1_done || lastClaim === today) {
+                document.getElementById('btn2').innerText = "LOCKED 🔒";
+                document.getElementById('btn2').classList.add('btn-locked');
+                document.getElementById('btn2').removeAttribute('href');
             }
         }
 
-        function showClaim(num) {
+        function startClaim(num) {
             setTimeout(() => {
                 document.getElementById(`btn${num}`).classList.add('hidden');
                 document.getElementById(`claim${num}`).classList.remove('hidden');
-            }, 3000);
+            }, 3000); // 3 second delay to let them join
         }
 
-        async function processClaim(num) {
-            const claimBtn = document.getElementById(`claim${num}`);
-            claimBtn.innerHTML = `<div class="loader"></div> Syncing...`;
-            claimBtn.disabled = true;
+        async function finalize(num) {
+            const btn = document.getElementById(`claim${num}`);
+            btn.innerHTML = `<div class="loader"></div> Syncing...`;
+            btn.disabled = true;
 
-            const reward = 2000;
-            const newBalance = (Number(userProfile.balance) || 0) + reward;
-            const updateData = num === 1 ? { t1_done: true, balance: newBalance } : { t2_done: true, balance: newBalance };
+            const newBalance = (Number(profile.balance) || 0) + 2000;
+            const update = num === 1 ? { t1_done: true, balance: newBalance } : { t2_done: true, balance: newBalance };
 
-            const { error } = await supabaseClient.from('profiles').update(updateData).eq('id', userProfile.id);
+            const { error } = await supabaseClient.from('profiles').update(update).eq('id', profile.id);
 
             if (!error) {
-                // Save the date they claimed
-                localStorage.setItem('last_tg_claim_date', new Date().toDateString());
+                localStorage.setItem('last_tg_date', new Date().toDateString());
                 window.location.href = 'reward.html';
             } else {
-                alert("Sync error. Try again.");
-                claimBtn.innerHTML = "Claim ₦2,000";
-                claimBtn.disabled = false;
+                alert("Error! Try again.");
+                btn.innerText = "Claim ₦2,000";
+                btn.disabled = false;
             }
         }
-
         window.onload = init;
     </script>
 </body>
