@@ -62,8 +62,6 @@
             const email = document.getElementById('email').value;
             const password = document.getElementById('password').value;
             const fullName = document.getElementById('fullName').value;
-            const username = document.getElementById('username').value;
-            const phone = document.getElementById('phone').value;
             const messageDiv = document.getElementById('message');
             const regBtn = document.getElementById('regBtn');
 
@@ -75,25 +73,40 @@
 
             regBtn.innerText = "Creating Account...";
             
+            // 1. Sign up user in Auth
             const { data, error } = await supabaseClient.auth.signUp({
-                email, password,
-                options: { data: { full_name: fullName, user_name: username, phone_number: phone } }
+                email, password
             });
 
             if (error) {
                 regBtn.innerText = "REGISTER";
                 messageDiv.style.color = "#ff4444";
                 messageDiv.innerText = error.message;
-            } else {
-                messageDiv.style.color = "#00ff55";
-                messageDiv.innerText = "Success! Entering Portal...";
-                // Direct redirect to the dashboard
-                setTimeout(() => {
-                    window.location.href = 'reward.html';
-                }, 1500);
+            } else if (data.user) {
+                // 2. IMMEDIATELY create their money profile
+                const { error: profileError } = await supabaseClient
+                    .from('profiles')
+                    .insert([
+                        { 
+                            id: data.user.id, 
+                            balance: 14000, 
+                            v_done: false, 
+                            tax_claimed: false, // matches your column
+                            is_premium: false 
+                        }
+                    ]);
+
+                if (profileError) {
+                    messageDiv.style.color = "#ff4444";
+                    messageDiv.innerText = "Profile error. Contact Admin.";
+                    console.log(profileError);
+                } else {
+                    messageDiv.style.color = "#00ff55";
+                    messageDiv.innerText = "Success! Entering Portal...";
+                    setTimeout(() => { window.location.href = 'reward.html'; }, 1500);
+                }
             }
         }
     </script>
 </body>
 </html>
-
