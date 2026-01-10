@@ -9,23 +9,18 @@
         :root { --neon: #00ff55; --bg: #000000; --card: #0a0a0a; --text: #ffffff; --soft-text: #888888; }
         * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
         body { font-family: 'Inter', sans-serif; background-color: var(--bg); color: var(--text); margin: 0; padding: 15px; padding-bottom: 120px; }
-        
         .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px; }
         .balance-box { background: linear-gradient(145deg, #001a08, #000000); padding: 25px; border-radius: 24px; border: 1px solid rgba(0, 255, 85, 0.2); position: relative; }
         .balance-box h1 { color: var(--neon); margin: 5px 0; font-size: 34px; font-weight: 800; }
         .switch-btn { background: rgba(0,255,85,0.1); border: 1px solid var(--neon); color: var(--neon); padding: 8px 15px; border-radius: 50px; font-size: 11px; cursor: pointer; font-weight: 700; display: inline-flex; align-items: center; gap: 8px; }
-
         .task-row { display: flex; overflow-x: auto; gap: 20px; padding-bottom: 20px; scrollbar-width: none; }
         .task-item { text-align: center; flex: 0 0 auto; width: 85px; cursor: pointer; }
         .circle-wrap { width: 68px; height: 68px; border-radius: 50%; border: 1px solid var(--neon); display: flex; align-items: center; justify-content: center; margin: 0 auto 10px; background: rgba(0,255,85,0.03); }
         .circle-wrap i { font-size: 24px; color: var(--neon); }
-        
         .p-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 25px; }
         .stat-card { background: #0f0f0f; border: 1px solid #222; padding: 15px; border-radius: 18px; text-align: center; }
-
         .tx-card { background: #0f0f0f; border: 1px solid #222; padding: 15px; border-radius: 20px; display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px; }
         .tx-icon { width: 40px; height: 40px; border-radius: 10px; background: rgba(0,255,85,0.1); display: flex; align-items: center; justify-content: center; color: var(--neon); }
-
         .bottom-nav { position: fixed; bottom: 0; left: 0; right: 0; background: #050505; display: flex; justify-content: space-around; padding: 15px; border-top: 1px solid #1a1a1a; }
         .nav-link { color: #555; text-decoration: none; font-size: 11px; text-align: center; }
         .upgrade-pill { background: var(--neon); color: #000 !important; padding: 10px 18px; border-radius: 8px; font-weight: 800; }
@@ -71,50 +66,30 @@
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script>
         const supabaseClient = supabase.createClient('https://gbmpenlojubfkvqeyxkh.supabase.co', 'sb_publishable_rYaNpJ5Ngw35pxv4TFmXQw_6-LrYGo-');
-        let currentBalance = 0;
-        let isNaira = true;
-
+        
         async function loadData() {
+            // Check if user is logged in
             const { data: { user } } = await supabaseClient.auth.getUser();
-            if(!user) { window.location.href='index.html'; return; }
-            
-            // Pulling ONLY the 3 columns from your table
-            let { data: profile } = await supabaseClient.from('profiles').select('balance, tax_claimed, v_done').eq('id', user.id).single();
-            
-            if(profile) {
-                currentBalance = profile.balance || 0;
-                document.getElementById('userName').innerText = user.email.split('@')[0].toUpperCase();
-                document.getElementById('userInit').innerText = user.email.charAt(0).toUpperCase();
-                
-                // Matches your order: tax_claimed then v_done
-                document.getElementById('tProg').innerText = (profile.tax_claimed ? "1/1" : "0/1");
-                document.getElementById('vProg').innerText = (profile.v_done ? "1/1" : "0/1");
-                
-                updateBalanceDisplay();
-                loadHistory(profile);
+            if(!user) { 
+                window.location.href='index.html'; 
+                return; 
             }
-        }
-
-        function updateBalanceDisplay() {
-            const bTxt = document.getElementById('balTxt');
-            bTxt.innerText = isNaira ? "₦" + currentBalance.toLocaleString() : "€" + (currentBalance / 2000).toLocaleString();
-        }
-
-        function toggleCur() { isNaira = !isNaira; document.getElementById('curLabel').innerText = isNaira ? "NAIRA" : "EURO"; updateBalanceDisplay(); }
-
-        function loadHistory(profile) {
+            
+            // Set basic UI using only Auth data (No Table required)
+            document.getElementById('userName').innerText = user.email.split('@')[0].toUpperCase();
+            document.getElementById('userInit').innerText = user.email.charAt(0).toUpperCase();
+            
+            // Balance shows 0 because table is deleted
+            document.getElementById('balTxt').innerText = "₦0.00";
+            document.getElementById('tProg').innerText = "0/1";
+            document.getElementById('vProg').innerText = "0/1";
+            
             const container = document.getElementById('txContainer');
-            container.innerHTML = "";
-            if(profile.tax_claimed) addTx(container, "Social Reward", "Telegram task income", 2000);
-            if(profile.v_done) addTx(container, "Video Reward", "Ad watch income", 3000);
-            addTx(container, "Welcome Bonus", "Registration cashback", 14000);
+            container.innerHTML = `<p style="color:#555; font-size:12px; text-align:center;">No transactions found.</p>`;
         }
 
-        function addTx(container, title, desc, amt) {
-            const card = document.createElement('div');
-            card.className = "tx-card";
-            card.innerHTML = `<div style="display:flex; align-items:center; gap:12px;"><div class="tx-icon"><i class="fas fa-bolt"></i></div><div><span style="font-size:13px; font-weight:700;">${title}</span><br><span style="font-size:10px; color:#888;">${desc}</span></div></div><div style="color:var(--neon); font-size:13px; font-weight:800;">+₦${amt.toLocaleString()}</div>`;
-            container.appendChild(card);
+        function toggleCur() { 
+            alert("Balance data is currently unavailable."); 
         }
 
         window.onload = loadData;
