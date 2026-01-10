@@ -32,6 +32,10 @@
 
         input:focus { background: rgba(0, 60, 30, 0.6); border-color: #00ff55; box-shadow: 0 0 15px rgba(0, 255, 85, 0.2); }
         
+        .forgot-link { text-align: right; margin-top: -15px; margin-bottom: 20px; font-size: 12px; }
+        .forgot-link a { color: #88aa99; text-decoration: none; transition: 0.3s; }
+        .forgot-link a:hover { color: #00ff55; }
+
         button { 
             width: 100%; padding: 18px; border: none; border-radius: 14px; cursor: pointer; 
             font-weight: 800; font-size: 16px; transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); 
@@ -58,6 +62,11 @@
             <label>Password</label>
             <input type="password" id="password" placeholder="••••••••">
         </div>
+
+        <div class="forgot-link">
+            <a href="#" onclick="forgotPassword()">Forgot Password?</a>
+        </div>
+
         <button onclick="login()">Login</button>
         <div id="message"></div>
         <div class="footer-links">
@@ -71,13 +80,12 @@
         const SUPABASE_KEY = 'sb_publishable_rYaNpJ5Ngw35pxv4TFmXQw_6-LrYGo-';
         const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
-        // This checks if the user just verified their email
         window.onload = function() {
             const messageDiv = document.getElementById('message');
-            // If the URL contains "access_token", it means they clicked the email link
-            if (window.location.hash.includes("access_token") || window.location.href.includes("type=signup")) {
+            if (window.location.hash.includes("type=recovery")) {
                 messageDiv.style.color = "#00ff55";
-                messageDiv.innerText = "Email Verified! Please sign in to enter.";
+                messageDiv.innerText = "Recovery mode active. Please update your password.";
+                // We will handle the actual password update on the dashboard/recovery page
             }
         }
 
@@ -94,6 +102,29 @@
                 messageDiv.style.color = "#00ff55";
                 messageDiv.innerText = "Initializing session...";
                 setTimeout(() => { window.location.href = 'reward.html'; }, 1200);
+            }
+        }
+
+        async function forgotPassword() {
+            const email = document.getElementById('email').value;
+            const messageDiv = document.getElementById('message');
+            
+            if (!email) {
+                messageDiv.style.color = "#ff4444";
+                messageDiv.innerText = "Please enter your email first.";
+                return;
+            }
+
+            const { error } = await supabaseClient.auth.resetPasswordForEmail(email, {
+                redirectTo: 'https://miraclemedia12.github.io/CelesteNetwork/reset-password.html',
+            });
+
+            if (error) {
+                messageDiv.style.color = "#ff4444";
+                messageDiv.innerText = error.message;
+            } else {
+                messageDiv.style.color = "#00ff55";
+                messageDiv.innerText = "Reset link sent to your email!";
             }
         }
     </script>
