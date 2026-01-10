@@ -11,7 +11,7 @@
         body { background: var(--bg); color: #fff; font-family: 'Inter', sans-serif; margin: 0; padding: 20px; display: flex; flex-direction: column; align-items: center; min-height: 100vh; }
         
         .header { text-align: center; margin-bottom: 40px; margin-top: 20px; }
-        .header h1 { font-size: 28px; font-weight: 900; letter-spacing: -1px; margin: 0; }
+        .header h1 { font-size: 28px; font-weight: 900; letter-spacing: -1px; margin: 0; text-transform: uppercase; }
         .header p { color: #666; font-size: 14px; margin-top: 8px; max-width: 300px; line-height: 1.4; }
 
         .task-container { width: 100%; max-width: 420px; display: flex; flex-direction: column; gap: 25px; }
@@ -22,89 +22,64 @@
             border-radius: 28px; 
             padding: 24px; 
             position: relative;
-            overflow: hidden;
+            transition: 0.3s ease;
         }
+        
+        .task-card.completed { opacity: 0.5; border-color: #333; }
 
         .reward-badge { 
-            position: absolute; 
-            top: 0; 
-            right: 0; 
-            background: var(--neon); 
-            color: #000; 
-            padding: 6px 15px; 
-            font-size: 12px; 
-            font-weight: 800; 
+            position: absolute; top: 0; right: 0; 
+            background: var(--neon); color: #000; 
+            padding: 6px 15px; font-size: 12px; font-weight: 800; 
             border-bottom-left-radius: 15px;
         }
 
         .task-header { display: flex; align-items: center; gap: 15px; margin-bottom: 15px; }
         .icon-circle { 
-            width: 54px; 
-            height: 54px; 
-            background: rgba(0, 136, 204, 0.1); 
-            border: 1px solid rgba(0, 136, 204, 0.3);
-            border-radius: 50%; 
-            display: flex; 
-            align-items: center; 
-            justify-content: center; 
-            color: var(--tg-blue); 
-            font-size: 22px; 
+            width: 54px; height: 54px; 
+            background: rgba(0, 136, 204, 0.1); border: 1px solid rgba(0, 136, 204, 0.3);
+            border-radius: 50%; display: flex; align-items: center; justify-content: center; 
+            color: var(--tg-blue); font-size: 22px; 
         }
         
         .title-area h3 { margin: 0; font-size: 18px; font-weight: 700; }
         .title-area span { font-size: 11px; text-transform: uppercase; color: var(--tg-blue); letter-spacing: 1px; font-weight: 700; }
 
-        .write-up { 
-            font-size: 13px; 
-            color: #999; 
-            line-height: 1.6; 
-            margin-bottom: 20px; 
-            padding-bottom: 15px;
-            border-bottom: 1px solid #1a1a1a;
-        }
+        .write-up { font-size: 13px; color: #999; line-height: 1.6; margin-bottom: 15px; padding-bottom: 15px; border-bottom: 1px solid #1a1a1a; }
 
-        button { 
-            width: 100%; 
-            padding: 16px; 
-            border-radius: 18px; 
-            border: none; 
-            font-weight: 800; 
-            text-transform: uppercase; 
-            cursor: pointer; 
-            transition: 0.3s;
-            font-size: 14px;
-            letter-spacing: 0.5px;
+        .status-indicator { font-size: 11px; text-transform: uppercase; font-weight: 800; letter-spacing: 0.5px; margin-bottom: 15px; display: block; color: #555; }
+        .status-indicator.ready { color: var(--neon); }
+        .status-indicator.verifying { color: #f1c40f; }
+        .status-indicator.claimed { color: #888; }
+
+        .btn-action { 
+            display: block; width: 100%; padding: 16px; border-radius: 18px; 
+            border: none; font-weight: 800; text-transform: uppercase; 
+            text-align: center; text-decoration: none; cursor: pointer; 
+            transition: 0.3s; font-size: 14px; letter-spacing: 0.5px;
         }
 
         .btn-join { background: var(--tg-blue); color: #fff; }
         .btn-claim { background: var(--neon); color: #000; box-shadow: 0 5px 15px rgba(0, 255, 85, 0.2); }
-        .btn-locked { background: #1a1a1a; color: #444; cursor: not-allowed; }
+        .btn-locked { background: #1a1a1a !important; color: #444 !important; pointer-events: none; }
 
-        .timer-box { 
-            background: rgba(255, 59, 59, 0.05); 
-            border: 1px solid rgba(255, 59, 59, 0.2);
-            padding: 10px;
-            border-radius: 12px;
-            margin-top: 15px;
-            text-align: center;
-        }
-        .timer-label { font-size: 10px; color: #ff3b3b; text-transform: uppercase; display: block; margin-bottom: 2px; }
+        .timer-box { background: rgba(255, 59, 59, 0.05); border: 1px solid rgba(255, 59, 59, 0.2); padding: 10px; border-radius: 12px; margin-top: 15px; text-align: center; }
+        .timer-label { font-size: 10px; color: #ff3b3b; text-transform: uppercase; display: block; }
         .timer-val { font-size: 16px; font-weight: 800; color: #ff3b3b; font-family: monospace; }
         
         .hidden { display: none; }
-        .loader { border: 2px solid rgba(255,255,255,0.2); border-top: 2px solid currentColor; border-radius: 50%; width: 16px; height: 16px; animation: spin 0.8s linear infinite; display: inline-block; margin-right: 8px; vertical-align: middle; }
+        .loader { border: 2px solid rgba(255,255,255,0.2); border-top: 2px solid #fff; border-radius: 50%; width: 14px; height: 14px; animation: spin 0.8s linear infinite; display: inline-block; vertical-align: middle; margin-right: 5px; }
         @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
 
         .nav-footer { margin-top: 40px; margin-bottom: 20px; }
-        .back-link { color: #555; text-decoration: none; font-size: 14px; font-weight: 600; transition: 0.3s; }
-        .back-link:hover { color: #fff; }
+        .back-link { color: #555; text-decoration: none; font-size: 14px; font-weight: 600; }
     </style>
 </head>
 <body>
 
     <div class="header">
         <h1>TELEGRAM TASKS</h1>
-        <p>Support the Celeste community and grow your earnings balance today.</p>
+        <p>Complete these tasks to unlock your daily rewards.</p>
     </div>
 
     <div class="task-container">
@@ -113,15 +88,16 @@
             <div class="reward-badge">₦2,000</div>
             <div class="task-header">
                 <div class="icon-circle"><i class="fab fa-telegram-plane"></i></div>
-                <div class="title-area">
-                    <span>Task 01</span>
-                    <h3>Official Channel</h3>
-                </div>
+                <div class="title-area"><span>Task 01</span><h3>Official Channel</h3></div>
             </div>
-            <div class="write-up">
-                Join our main news channel to get real-time updates on payouts, new features, and community announcements. You must remain a member to keep your earnings.
-            </div>
-            <button id="btn1" onclick="handleTask(1)">Join Channel</button>
+            <div class="write-up">Join our main news channel to get real-time updates on payouts and announcements.</div>
+            
+            <span class="status-indicator" id="status1">Status: Ready to start</span>
+
+            <!-- LINKED BUTTON: Takes user to Telegram and starts background verify -->
+            <a href="https://t.me/celesteofficial1" target="_blank" id="btn1" class="btn-action btn-join" onclick="handleJoinClick(1)">Join Channel</a>
+            
+            <button id="claim1" class="btn-action btn-claim hidden" onclick="processClaim(1)">Claim Reward</button>
         </div>
 
         <!-- TASK 2 -->
@@ -129,15 +105,16 @@
             <div class="reward-badge">₦2,000</div>
             <div class="task-header">
                 <div class="icon-circle"><i class="fab fa-telegram-plane"></i></div>
-                <div class="title-area">
-                    <span>Task 02</span>
-                    <h3>Community Hub</h3>
-                </div>
+                <div class="title-area"><span>Task 02</span><h3>Community Hub</h3></div>
             </div>
-            <div class="write-up">
-                Engage with the AnimeHub community. This task helps us expand our network. This task unlocks 12 hours after the first task is completed.
-            </div>
-            <button id="btn2" onclick="handleTask(2)">Join Channel</button>
+            <div class="write-up">Engage with the AnimeHub community. This unlocks 12 hours after Task 1 is completed.</div>
+            
+            <span class="status-indicator" id="status2">Status: Ready to start</span>
+
+            <a href="https://t.me/Animehub004" target="_blank" id="btn2" class="btn-action btn-join" onclick="handleJoinClick(2)">Join Channel</a>
+            
+            <button id="claim2" class="btn-action btn-claim hidden" onclick="processClaim(2)">Claim Reward</button>
+            
             <div id="timerContainer2" class="timer-box hidden">
                 <span class="timer-label">Next Task Unlocks In</span>
                 <span id="timer2" class="timer-val">00:00:00</span>
@@ -145,9 +122,7 @@
         </div>
     </div>
 
-    <div class="nav-footer">
-        <a href="reward.html" class="back-link"><i class="fas fa-chevron-left"></i> Return to Dashboard</a>
-    </div>
+    <div class="nav-footer"><a href="reward.html" class="back-link"><i class="fas fa-chevron-left"></i> Return to Dashboard</a></div>
 
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script>
@@ -156,10 +131,6 @@
         const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
         let userProfile = null;
-        const LINKS = {
-            1: "https://t.me/celesteofficial1",
-            2: "https://t.me/Animehub004"
-        };
 
         async function init() {
             const { data: { user } } = await supabaseClient.auth.getUser();
@@ -174,47 +145,56 @@
 
         function refreshUI() {
             const now = Date.now();
-            const lockTime = 12 * 60 * 60 * 1000; // 12 Hours
-
-            // Task 1 Logic
-            const btn1 = document.getElementById('btn1');
-            if (userProfile.t1_done) {
-                btn1.className = "btn-locked";
-                btn1.innerText = "Task 1 Completed";
-                btn1.disabled = true;
-            }
-
-            // Task 2 Logic
-            const btn2 = document.getElementById('btn2');
-            const timerCont2 = document.getElementById('timerContainer2');
-            const timer2 = document.getElementById('timer2');
+            const lockTime = 12 * 60 * 60 * 1000;
             const t1Time = parseInt(localStorage.getItem('t1_timestamp') || 0);
 
+            // UI logic for Task 1
+            updateTaskUI(1, userProfile.t1_done);
+
+            // UI logic for Task 2
+            const timerCont2 = document.getElementById('timerContainer2');
+            const timer2 = document.getElementById('timer2');
+
             if (userProfile.t2_done) {
-                btn2.className = "btn-locked";
-                btn2.innerText = "Task 2 Completed";
-                btn2.disabled = true;
+                updateTaskUI(2, true);
                 timerCont2.classList.add('hidden');
             } else if (!userProfile.t1_done) {
-                btn2.className = "btn-locked";
-                btn2.innerText = "Locked";
-                btn2.disabled = true;
+                const btn2 = document.getElementById('btn2');
+                btn2.innerText = "Locked 🔒";
+                btn2.className = "btn-action btn-locked";
+                document.getElementById('status2').innerText = "Status: Locked";
             } else {
                 const timeLeft = (t1Time + lockTime) - now;
                 if (timeLeft > 0) {
-                    btn2.className = "btn-locked";
-                    btn2.innerText = "Locked";
-                    btn2.disabled = true;
+                    const btn2 = document.getElementById('btn2');
+                    btn2.innerText = "Locked 🔒";
+                    btn2.className = "btn-action btn-locked";
+                    document.getElementById('status2').innerText = "Status: Waiting Cooldown";
                     timerCont2.classList.remove('hidden');
                     timer2.innerText = formatTime(timeLeft);
                 } else {
-                    if(!btn2.classList.contains('btn-claim')) {
-                        btn2.className = "btn-join";
+                    // Check if claim button is already out
+                    if(document.getElementById('claim2').classList.contains('hidden')) {
+                        const btn2 = document.getElementById('btn2');
                         btn2.innerText = "Join Channel";
-                        btn2.disabled = false;
+                        btn2.className = "btn-action btn-join";
+                        document.getElementById('status2').innerText = "Status: Ready to start";
                         timerCont2.classList.add('hidden');
                     }
                 }
+            }
+        }
+
+        function updateTaskUI(num, isDone) {
+            const btn = document.getElementById(`btn${num}`);
+            const status = document.getElementById(`status${num}`);
+            const card = document.getElementById(`card${num}`);
+            if (isDone) {
+                btn.innerText = `Task ${num} Completed ✅`;
+                btn.className = "btn-action btn-locked";
+                status.innerText = "Status: Claimed ✅";
+                status.className = "status-indicator claimed";
+                card.classList.add('completed');
             }
         }
 
@@ -227,27 +207,30 @@
             return `${h.toString().padStart(2, '0')}:${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`;
         }
 
-        function handleTask(num) {
+        function handleJoinClick(num) {
             const btn = document.getElementById(`btn${num}`);
+            const claimBtn = document.getElementById(`claim${num}`);
+            const status = document.getElementById(`status${num}`);
             
-            if (btn.innerText === "Join Channel") {
-                window.open(LINKS[num], '_blank');
-                btn.innerHTML = `<div class="loader"></div> Verifying...`;
-                btn.disabled = true;
-                setTimeout(() => {
-                    btn.className = "btn-claim";
-                    btn.innerText = "Claim Reward";
-                    btn.disabled = false;
-                }, 6000);
-            } else if (btn.innerText === "Claim Reward") {
-                processClaim(num);
-            }
+            // Immediately show verifying state
+            btn.innerHTML = `<div class="loader"></div> Redirecting...`;
+            status.innerText = "Status: Verifying membership...";
+            status.className = "status-indicator verifying";
+            
+            // This happens in the background while the user is in Telegram
+            setTimeout(() => {
+                btn.classList.add('hidden');
+                claimBtn.classList.remove('hidden');
+                status.innerText = "Status: Ready to claim!";
+                status.className = "status-indicator ready";
+            }, 8000); // 8 seconds delay gives them time to join and come back
         }
 
         async function processClaim(num) {
-            const btn = document.getElementById(`btn${num}`);
-            btn.innerHTML = `<div class="loader"></div> Sending...`;
-            btn.disabled = true;
+            const claimBtn = document.getElementById(`claim${num}`);
+            const status = document.getElementById(`status${num}`);
+            claimBtn.innerHTML = `<div class="loader"></div> Syncing...`;
+            claimBtn.disabled = true;
 
             const reward = 2000;
             const newBalance = (Number(userProfile.balance) || 0) + reward;
@@ -260,25 +243,24 @@
                 await supabaseClient.from('history').insert([{
                     user_id: userProfile.id,
                     title: `Telegram Reward ${num}`,
-                    description: `Joined Telegram Channel ${num}`,
+                    description: `Joined Channel ${num}`,
                     amount: reward,
                     type: "credit",
                     created_at: new Date().toISOString()
                 }]);
 
-                if (num === 1) {
-                    localStorage.setItem('t1_timestamp', Date.now().toString());
-                }
+                if (num === 1) localStorage.setItem('t1_timestamp', Date.now().toString());
 
                 userProfile.balance = newBalance;
                 if(num === 1) userProfile.t1_done = true;
                 else userProfile.t2_done = true;
                 
+                claimBtn.classList.add('hidden');
                 refreshUI();
             } catch (err) {
-                alert("Database Error. Check connection.");
-                btn.innerText = "Claim Reward";
-                btn.disabled = false;
+                alert("Database Connection Error.");
+                claimBtn.innerHTML = "Claim Reward";
+                claimBtn.disabled = false;
             }
         }
 
