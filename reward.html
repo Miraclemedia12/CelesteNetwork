@@ -6,95 +6,39 @@
     <title>Celeste Dashboard | Rewards</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        :root {
-            --neon: #00ff55;
-            --bg: #000000;
-            --card: #0a0a0a;
-            --text: #ffffff;
-            --soft-text: #888888;
-            --danger: #ff4444;
-        }
-
+        :root { --neon: #00ff55; --bg: #000000; --card: #0a0a0a; --text: #ffffff; --soft-text: #888888; --danger: #ff4444; }
         * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+        body { font-family: 'Inter', sans-serif; background-color: var(--bg); color: var(--text); margin: 0; padding: 15px; padding-bottom: 120px; overflow-x: hidden; }
 
-        body {
-            font-family: 'Inter', sans-serif;
-            background-color: var(--bg);
-            color: var(--text);
-            margin: 0;
-            padding: 15px;
-            padding-bottom: 120px;
-            overflow-x: hidden;
-        }
-
-        /* --- UPGRADE MODAL --- */
-        #upgradeModal {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0,0,0,0.95); display: none; align-items: center;
-            justify-content: center; z-index: 5000; padding: 20px;
-        }
-        .modal-box {
-            background: #0d0d0d; border: 1px solid var(--neon);
-            padding: 30px 20px; border-radius: 25px; width: 100%; max-width: 350px;
-            text-align: center; box-shadow: 0 0 30px rgba(0, 255, 85, 0.2);
-        }
-        .m-btn-up { 
-            background: var(--neon); color: #000; border: none; width: 100%; 
-            padding: 15px; border-radius: 12px; font-weight: 800; margin-bottom: 10px; 
-            cursor: pointer; display: block; text-decoration: none; text-transform: uppercase; 
-            font-size: 14px;
-        }
+        /* MODAL & SIDEBAR STYLES */
+        #upgradeModal { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.95); display: none; align-items: center; justify-content: center; z-index: 5000; padding: 20px; }
+        .modal-box { background: #0d0d0d; border: 1px solid var(--neon); padding: 30px 20px; border-radius: 25px; width: 100%; max-width: 350px; text-align: center; box-shadow: 0 0 30px rgba(0, 255, 85, 0.2); }
+        .m-btn-up { background: var(--neon); color: #000; border: none; width: 100%; padding: 15px; border-radius: 12px; font-weight: 800; margin-bottom: 10px; cursor: pointer; display: block; text-decoration: none; text-transform: uppercase; font-size: 14px; }
         .m-btn-back { background: transparent; color: #fff; border: 1px solid #333; width: 100%; padding: 12px; border-radius: 12px; cursor: pointer; }
-
-        /* --- SIDEBAR --- */
-        .sidebar {
-            position: fixed; top: 0; left: -260px; width: 260px; height: 100%;
-            background: var(--card); border-right: 1px solid var(--neon);
-            transition: 0.4s ease; z-index: 3000; padding: 30px 20px;
-        }
+        .sidebar { position: fixed; top: 0; left: -260px; width: 260px; height: 100%; background: var(--card); border-right: 1px solid var(--neon); transition: 0.4s ease; z-index: 3000; padding: 30px 20px; }
         .sidebar.active { left: 0; }
-        .sidebar a { display: block; color: white; padding: 15px 0; text-decoration: none; border-bottom: 1px solid #111; }
+        .sidebar h2 { color: var(--neon); font-size: 20px; margin-bottom: 30px; }
+        .sidebar a { display: block; color: white; padding: 15px 0; text-decoration: none; border-bottom: 1px solid #111; font-size: 14px; }
         .overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); display: none; z-index: 2500; }
         .overlay.active { display: block; }
 
-        /* --- HEADER --- */
+        /* HEADER */
         .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px; padding-top: 10px; }
         .left-header { display: flex; align-items: center; gap: 12px; }
         .menu-btn { font-size: 24px; color: var(--neon); cursor: pointer; }
-        .support-btn { 
-            font-size: 20px; color: var(--neon); cursor: pointer; 
-            background: rgba(0, 255, 85, 0.1); width: 38px; height: 38px; 
-            display: flex; align-items: center; justify-content: center; border-radius: 50%;
-            text-decoration: none;
-        }
+        .support-btn { font-size: 20px; color: var(--neon); background: rgba(0, 255, 85, 0.1); width: 38px; height: 38px; display: flex; align-items: center; justify-content: center; border-radius: 50%; text-decoration: none; }
         .user-info { display: flex; align-items: center; gap: 10px; }
         .initials { width: 35px; height: 35px; background: var(--neon); color: #000; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 800; }
 
-        /* --- BALANCE --- */
-        .balance-box {
-            background: linear-gradient(145deg, #001a08, #000000);
-            padding: 25px; border-radius: 24px; border: 1px solid rgba(0, 255, 85, 0.2);
-            margin-bottom: 25px; position: relative;
-        }
-        .plan-pill { 
-            position: absolute; top: 25px; right: 25px; 
-            background: rgba(0,255,85,0.1); color: var(--neon); 
-            border: 1px solid var(--neon); padding: 4px 10px; 
-            border-radius: 4px; font-size: 10px; font-weight: 800; 
-            display: flex; flex-direction: column; align-items: flex-end; gap: 4px;
-        }
+        /* BALANCE BOX */
+        .balance-box { background: linear-gradient(145deg, #001a08, #000000); padding: 25px; border-radius: 24px; border: 1px solid rgba(0, 255, 85, 0.2); margin-bottom: 25px; position: relative; }
+        .plan-pill { position: absolute; top: 25px; right: 25px; background: rgba(0,255,85,0.1); color: var(--neon); border: 1px solid var(--neon); padding: 4px 10px; border-radius: 4px; font-size: 10px; font-weight: 800; display: flex; flex-direction: column; align-items: flex-end; gap: 4px; }
         .expiry-warn { color: var(--danger); font-size: 9px; animation: blink 1.5s infinite; }
-        
-        @keyframes blink {
-            0% { opacity: 1; }
-            50% { opacity: 0.5; }
-            100% { opacity: 1; }
-        }
-
+        @keyframes blink { 0% { opacity: 1; } 50% { opacity: 0.5; } 100% { opacity: 1; } }
         .balance-box h1 { color: var(--neon); margin: 5px 0 15px 0; font-size: 34px; font-weight: 800; }
         .switch-btn { background: rgba(0,255,85,0.1); border: 1px solid var(--neon); color: var(--neon); padding: 8px 15px; border-radius: 50px; font-size: 11px; cursor: pointer; font-weight: 700; display: inline-flex; align-items: center; gap: 8px; }
 
-        /* --- TASKS --- */
+        /* TASKS */
         .section-title { font-weight: 700; font-size: 17px; color: #fff; margin-bottom: 15px; }
         .task-row { display: flex; overflow-x: auto; gap: 20px; padding-bottom: 20px; scrollbar-width: none; }
         .task-item { text-align: center; flex: 0 0 auto; width: 85px; cursor: pointer; }
@@ -103,16 +47,14 @@
         .locked { opacity: 0.4; border-style: dashed; }
         .lock-tag { position: absolute; top: -5px; right: -5px; background: #000; border: 1px solid #333; width: 20px; height: 20px; border-radius: 50%; font-size: 10px; color: #ffcc00; display: flex; align-items: center; justify-content: center; }
 
-        /* --- PERFORMANCE --- */
+        /* PERFORMANCE & TX */
         .p-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 25px; }
         .stat-card { background: #0f0f0f; border: 1px solid #222; padding: 15px; border-radius: 18px; }
-
-        /* --- TRANSACTIONS --- */
         .tx-list { display: flex; flex-direction: column; gap: 12px; }
         .tx-card { background: #0f0f0f; border: 1px solid #222; padding: 15px; border-radius: 20px; display: flex; align-items: center; justify-content: space-between; }
         .tx-icon { width: 45px; height: 45px; border-radius: 12px; background: rgba(0,255,85,0.1); display: flex; align-items: center; justify-content: center; color: var(--neon); }
 
-        /* --- NAV --- */
+        /* NAV */
         .bottom-nav { position: fixed; bottom: 0; left: 0; right: 0; background: #050505; display: flex; justify-content: space-around; padding: 15px 5px; border-top: 1px solid #1a1a1a; z-index: 2000; }
         .nav-link { color: #555; text-decoration: none; font-size: 11px; text-align: center; }
         .nav-link i { font-size: 22px; margin-bottom: 5px; display: block; }
@@ -125,7 +67,7 @@
         <div class="modal-box">
             <i class="fas fa-lock" style="font-size: 40px; color: var(--neon); margin-bottom: 15px;"></i>
             <h2 style="color: #fff; margin-bottom: 10px;">Premium Task</h2>
-            <p style="color: #888; margin-bottom: 20px; font-size: 14px;">Upgrade your plan to unlock TikTok, Twitter, and Casino tasks and increase your daily earnings!</p>
+            <p style="color: #888; margin-bottom: 20px; font-size: 14px;">Upgrade your plan to unlock TikTok, Twitter, and Casino tasks!</p>
             <a href="upgrade.html" class="m-btn-up">Upgrade Plan Now</a>
             <button class="m-btn-back" onclick="closeModal()">Close</button>
         </div>
@@ -159,44 +101,22 @@
             <span class="expiry-warn">2 Days Remaining</span>
         </div>
         <p style="font-size: 10px; color: var(--soft-text); letter-spacing: 1px;">AVAILABLE BALANCE</p>
-        <h1 id="balTxt">₦0.00</h1>
+        <h1 id="balTxt">₦14,000.00</h1>
         <div class="switch-btn" onclick="toggleCur()"><span id="curLabel">NAIRA</span> <i class="fas fa-sync-alt"></i></div>
     </div>
 
     <div class="section-title">Earning Tasks</div>
     <div class="task-row">
-        <div class="task-item" onclick="window.location.href='watch.html'">
-            <div class="circle-wrap"><i class="fas fa-play"></i></div>
-            <span class="task-name">Watch Ads</span>
-        </div>
-        <div class="task-item" onclick="window.location.href='telegram.html'">
-            <div class="circle-wrap"><i class="fab fa-telegram-plane"></i></div>
-            <span class="task-name">Telegram</span>
-        </div>
-        <div class="task-item" onclick="showPop()">
-            <div class="circle-wrap locked"><i class="fab fa-tiktok"></i><div class="lock-tag"><i class="fas fa-lock"></i></div></div>
-            <span class="task-name">TikTok</span>
-        </div>
-        <div class="task-item" onclick="showPop()">
-            <div class="circle-wrap locked"><i class="fab fa-twitter"></i><div class="lock-tag"><i class="fas fa-lock"></i></div></div>
-            <span class="task-name">Twitter</span>
-        </div>
-        <div class="task-item" onclick="showPop()">
-            <div class="circle-wrap locked"><i class="fas fa-dice"></i><div class="lock-tag"><i class="fas fa-lock"></i></div></div>
-            <span class="task-name">Casino</span>
-        </div>
+        <div class="task-item" onclick="window.location.href='watch.html'"><div class="circle-wrap"><i class="fas fa-play"></i></div><span>Watch Ads</span></div>
+        <div class="task-item" onclick="window.location.href='telegram.html'"><div class="circle-wrap"><i class="fab fa-telegram-plane"></i></div><span>Telegram</span></div>
+        <div class="task-item" onclick="showPop()"><div class="circle-wrap locked"><i class="fab fa-tiktok"></i><div class="lock-tag"><i class="fas fa-lock"></i></div></div><span>TikTok</span></div>
+        <div class="task-item" onclick="showPop()"><div class="circle-wrap locked"><i class="fab fa-twitter"></i><div class="lock-tag"><i class="fas fa-lock"></i></div></div><span>Twitter</span></div>
     </div>
 
     <div class="section-title">Performance</div>
     <div class="p-grid">
-        <div class="stat-card">
-            <span style="font-size: 10px; color: var(--soft-text);">ADS WATCHED</span>
-            <div id="vProg" style="font-size: 18px; font-weight: 800; color: var(--neon); margin-top: 5px;">0 / 1</div>
-        </div>
-        <div class="stat-card">
-            <span style="font-size: 10px; color: var(--soft-text);">ENGAGEMENTS</span>
-            <div id="tProg" style="font-size: 18px; font-weight: 800; color: var(--neon); margin-top: 5px;">0 / 2</div>
-        </div>
+        <div class="stat-card"><span style="font-size: 10px; color: var(--soft-text);">ADS WATCHED</span><div id="vProg" style="font-size: 18px; font-weight: 800; color: var(--neon); margin-top: 5px;">0 / 1</div></div>
+        <div class="stat-card"><span style="font-size: 10px; color: var(--soft-text);">ENGAGEMENTS</span><div id="tProg" style="font-size: 18px; font-weight: 800; color: var(--neon); margin-top: 5px;">0 / 2</div></div>
     </div>
 
     <div class="section-title">Recent Transactions</div>
@@ -212,7 +132,7 @@
 
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script>
-        // NEW PROJECT DETAILS
+        // PROJECT DETAILS
         const SUPABASE_URL = 'https://hwensxsqikohnsxwdxji.supabase.co'; 
         const SUPABASE_KEY = 'sb_publishable_S3ryEPuq04Bw8yJ3_LzmxA_qyVKpJPf';
         const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
@@ -224,22 +144,24 @@
             const { data: { user } } = await supabaseClient.auth.getUser();
             if(!user) { window.location.href='index.html'; return; }
             
-            // FETCH REAL DATA FROM YOUR DATABASE
-            let { data: profile, error } = await supabaseClient
-                .from('profiles')
-                .select('*')
-                .eq('id', user.id)
-                .single();
+            // Try to get existing profile
+            let { data: profile } = await supabaseClient.from('profiles').select('*').eq('id', user.id).single();
+            
+            // IF NO PROFILE (New User), FORCE CREATE ONE WITH 14K
+            if(!profile) {
+                const { data: newProfile, error } = await supabaseClient
+                    .from('profiles')
+                    .insert([{ id: user.id, balance: 14000, tax_claimed: false, v_done: false }])
+                    .select().single();
+                profile = newProfile;
+            }
             
             if(profile) {
-                currentBalance = profile.balance; // This will be 14000
+                currentBalance = profile.balance;
                 document.getElementById('userName').innerText = user.email.split('@')[0].toUpperCase();
                 document.getElementById('userInit').innerText = user.email.charAt(0).toUpperCase();
-                
-                // Set Performance Stats
                 document.getElementById('vProg').innerText = (profile.v_done ? "1 / 1" : "0 / 1");
                 document.getElementById('tProg').innerText = (profile.tax_claimed ? "1 / 2" : "0 / 2");
-                
                 updateDisplay();
                 loadHistory(profile);
             }
@@ -247,46 +169,23 @@
 
         function updateDisplay() {
             const bTxt = document.getElementById('balTxt');
-            const label = document.getElementById('curLabel');
-            
-            if(isNaira) {
-                bTxt.innerText = "₦" + currentBalance.toLocaleString(undefined, {minimumFractionDigits: 2});
-                label.innerText = "NAIRA";
-            } else {
-                bTxt.innerText = "€" + (currentBalance / 2000).toLocaleString(undefined, {minimumFractionDigits: 2});
-                label.innerText = "EURO";
-            }
+            bTxt.innerText = isNaira ? "₦" + currentBalance.toLocaleString() : "€" + (currentBalance / 2000).toLocaleString();
         }
 
-        function toggleCur() {
-            isNaira = !isNaira;
-            updateDisplay();
-        }
+        function toggleCur() { isNaira = !isNaira; document.getElementById('curLabel').innerText = isNaira ? "NAIRA" : "EURO"; updateDisplay(); }
 
         function loadHistory(profile) {
             const container = document.getElementById('txContainer');
             container.innerHTML = "";
-            
-            // Registration Cashback (Always exists if profile exists)
             addTx(container, "Registration Cashback", "Welcome bonus credited from Celeste", 14000, "fa-gift");
-            
-            if(profile.tax_claimed) addTx(container, "Social Reward", "Telegram engagement bonus", 2000, "fa-bolt");
+            if(profile.tax_claimed) addTx(container, "Social Reward", "Telegram bonus", 2000, "fa-bolt");
             if(profile.v_done) addTx(container, "Video Reward", "Ad watch revenue", 3000, "fa-bolt");
         }
 
         function addTx(container, title, desc, amt, icon) {
             const card = document.createElement('div');
             card.className = "tx-card";
-            card.innerHTML = `
-                <div style="display: flex; align-items: center; gap: 12px;">
-                    <div class="tx-icon"><i class="fas ${icon}"></i></div>
-                    <div>
-                        <span style="font-size: 13px; font-weight: 700; display: block;">${title}</span>
-                        <span style="font-size: 10px; color: var(--soft-text);">${desc}</span>
-                    </div>
-                </div>
-                <div style="color: var(--neon); font-size: 13px; font-weight: 800;">+₦${amt.toLocaleString()}</div>
-            `;
+            card.innerHTML = `<div style="display:flex;align-items:center;gap:12px;"><div class="tx-icon"><i class="fas ${icon}"></i></div><div><span style="font-size:13px;font-weight:700;">${title}</span><br><span style="font-size:10px;color:var(--soft-text);">${desc}</span></div></div><div style="color:var(--neon);font-size:13px;font-weight:800;">+₦${amt.toLocaleString()}</div>`;
             container.prepend(card);
         }
 
