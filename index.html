@@ -76,8 +76,9 @@
 
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script>
-        const SUPABASE_URL = 'https://gbmpenlojubfkvqeyxkh.supabase.co'; 
-        const SUPABASE_KEY = 'sb_publishable_rYaNpJ5Ngw35pxv4TFmXQw_6-LrYGo-';
+        // NEW PROJECT DETAILS
+        const SUPABASE_URL = 'https://hwensxsqikohnsxwdxji.supabase.co'; 
+        const SUPABASE_KEY = 'sb_publishable_S3ryEPuq04Bw8yJ3_LzmxA_qyVKpJPf';
         const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
         window.onload = function() {
@@ -85,7 +86,6 @@
             if (window.location.hash.includes("type=recovery")) {
                 messageDiv.style.color = "#00ff55";
                 messageDiv.innerText = "Recovery mode active. Please update your password.";
-                // We will handle the actual password update on the dashboard/recovery page
             }
         }
 
@@ -93,6 +93,8 @@
             const email = document.getElementById('email').value;
             const password = document.getElementById('password').value;
             const messageDiv = document.getElementById('message');
+            
+            // Log in with email and password
             const { data, error } = await supabaseClient.auth.signInWithPassword({ email, password });
 
             if (error) {
