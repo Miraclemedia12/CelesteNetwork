@@ -37,8 +37,9 @@
 
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script>
-        const SUPABASE_URL = 'https://gbmpenlojubfkvqeyxkh.supabase.co'; 
-        const SUPABASE_KEY = 'sb_publishable_rYaNpJ5Ngw35pxv4TFmXQw_6-LrYGo-';
+        // NEW PROJECT DETAILS
+        const SUPABASE_URL = 'https://hwensxsqikohnsxwdxji.supabase.co'; 
+        const SUPABASE_KEY = 'sb_publishable_S3ryEPuq04Bw8yJ3_LzmxA_qyVKpJPf';
         const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
         async function handleSignUp() {
@@ -55,7 +56,8 @@
 
             regBtn.innerText = "Processing...";
             
-            // JUST create the account, NO table insert
+            // Sign up the user. The SQL Trigger in Supabase will automatically 
+            // create the profile row with the ₦14,000 balance.
             const { data, error } = await supabaseClient.auth.signUp({ email, password });
 
             if (error) {
