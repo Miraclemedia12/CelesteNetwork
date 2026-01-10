@@ -8,21 +8,10 @@
     <style>
         :root { --neon: #00ff55; --bg: #000000; --card: #0a0a0a; --text: #ffffff; --soft-text: #888888; }
         * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
-        body { font-family: 'Inter', sans-serif; background-color: var(--bg); color: var(--text); margin: 0; padding: 15px; padding-bottom: 120px; overflow-x: hidden; }
+        body { font-family: 'Inter', sans-serif; background-color: var(--bg); color: var(--text); margin: 0; padding: 15px; padding-bottom: 120px; }
         
-        #upgradeModal { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.95); display: none; align-items: center; justify-content: center; z-index: 5000; padding: 20px; }
-        .modal-box { background: #0d0d0d; border: 1px solid var(--neon); padding: 30px 20px; border-radius: 25px; width: 100%; max-width: 350px; text-align: center; }
-        .m-btn-up { background: var(--neon); color: #000; border: none; width: 100%; padding: 15px; border-radius: 12px; font-weight: 800; display: block; text-decoration: none; text-transform: uppercase; margin-bottom: 10px; }
-        
-        .sidebar { position: fixed; top: 0; left: -260px; width: 260px; height: 100%; background: var(--card); border-right: 1px solid var(--neon); transition: 0.4s ease; z-index: 3000; padding: 30px 20px; }
-        .sidebar.active { left: 0; }
-        .sidebar a { display: block; color: white; padding: 15px 0; text-decoration: none; border-bottom: 1px solid #111; }
-        .overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); display: none; z-index: 2500; }
-        .overlay.active { display: block; }
-
         .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px; }
-        .balance-box { background: linear-gradient(145deg, #001a08, #000000); padding: 25px; border-radius: 24px; border: 1px solid rgba(0, 255, 85, 0.2); margin-bottom: 25px; position: relative; }
-        .plan-pill { position: absolute; top: 25px; right: 25px; background: rgba(0,255,85,0.1); color: var(--neon); border: 1px solid var(--neon); padding: 4px 10px; border-radius: 4px; font-size: 10px; font-weight: 800; }
+        .balance-box { background: linear-gradient(145deg, #001a08, #000000); padding: 25px; border-radius: 24px; border: 1px solid rgba(0, 255, 85, 0.2); position: relative; }
         .balance-box h1 { color: var(--neon); margin: 5px 0; font-size: 34px; font-weight: 800; }
         .switch-btn { background: rgba(0,255,85,0.1); border: 1px solid var(--neon); color: var(--neon); padding: 8px 15px; border-radius: 50px; font-size: 11px; cursor: pointer; font-weight: 700; display: inline-flex; align-items: center; gap: 8px; }
 
@@ -37,19 +26,15 @@
         .tx-card { background: #0f0f0f; border: 1px solid #222; padding: 15px; border-radius: 20px; display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px; }
         .tx-icon { width: 40px; height: 40px; border-radius: 10px; background: rgba(0,255,85,0.1); display: flex; align-items: center; justify-content: center; color: var(--neon); }
 
-        .bottom-nav { position: fixed; bottom: 0; left: 0; right: 0; background: #050505; display: flex; justify-content: space-around; padding: 15px; border-top: 1px solid #1a1a1a; z-index: 2000; }
+        .bottom-nav { position: fixed; bottom: 0; left: 0; right: 0; background: #050505; display: flex; justify-content: space-around; padding: 15px; border-top: 1px solid #1a1a1a; }
         .nav-link { color: #555; text-decoration: none; font-size: 11px; text-align: center; }
         .upgrade-pill { background: var(--neon); color: #000 !important; padding: 10px 18px; border-radius: 8px; font-weight: 800; }
     </style>
 </head>
 <body>
 
-    <div id="upgradeModal"><div class="modal-box"><i class="fas fa-lock" style="font-size: 40px; color: var(--neon); margin-bottom: 15px;"></i><h2>Premium Task</h2><p style="color: #888; margin-bottom: 20px;">Upgrade your plan to unlock more tasks!</p><a href="upgrade.html" class="m-btn-up">Upgrade Now</a><button style="background:transparent; color:#fff; border:1px solid #333; width:100%; padding:10px; border-radius:10px;" onclick="closeAll()">Close</button></div></div>
-    <div class="overlay" id="overlay" onclick="closeAll()"></div>
-    <div class="sidebar" id="sidebar"><h2>MENU</h2><a href="profile.html">Profile</a><a href="withdraw.html">Withdrawal</a><a href="index.html" style="color:red;">Logout</a></div>
-
     <div class="header">
-        <i class="fas fa-bars" style="color:var(--neon); font-size:24px;" onclick="openSidebar()"></i>
+        <i class="fas fa-bars" style="color:var(--neon); font-size:24px;"></i>
         <div style="display:flex; align-items:center; gap:10px;">
             <span id="userName">Investor</span>
             <div id="userInit" style="width:35px; height:35px; background:var(--neon); color:#000; border-radius:50%; display:flex; align-items:center; justify-content:center; font-weight:800;">I</div>
@@ -57,31 +42,28 @@
     </div>
 
     <div class="balance-box">
-        <div class="plan-pill" id="planLabel">Free Plan</div>
-        <p style="font-size: 10px; color: var(--soft-text); letter-spacing:1px;">AVAILABLE BALANCE</p>
+        <p style="font-size: 10px; color: var(--soft-text);">AVAILABLE BALANCE</p>
         <h1 id="balTxt">₦0.00</h1>
         <div class="switch-btn" onclick="toggleCur()"><span id="curLabel">NAIRA</span> <i class="fas fa-sync-alt"></i></div>
     </div>
 
-    <div style="font-weight:700; margin-bottom:15px;">Earning Tasks</div>
+    <div style="font-weight:700; margin: 25px 0 15px;">Earning Tasks</div>
     <div class="task-row">
         <div class="task-item" onclick="window.location.href='watch.html'"><div class="circle-wrap"><i class="fas fa-play"></i></div><span>Videos</span></div>
         <div class="task-item" onclick="window.location.href='telegram.html'"><div class="circle-wrap"><i class="fab fa-telegram-plane"></i></div><span>Telegram</span></div>
-        <div class="task-item" onclick="showPop()"><div class="circle-wrap" style="opacity:0.4;"><i class="fab fa-tiktok"></i></div><span>TikTok</span></div>
+        <div class="task-item"><div class="circle-wrap" style="opacity:0.4;"><i class="fab fa-tiktok"></i></div><span>TikTok</span></div>
     </div>
 
     <div class="p-grid">
-        <div class="stat-card"><span style="font-size:10px; color:#888;">VIDEOS</span><div id="vProg" style="color:var(--neon); font-weight:800; font-size:18px;">0/1</div></div>
-        <div class="stat-card"><span style="font-size:10px; color:#888;">TELEGRAM</span><div id="tProg" style="color:var(--neon); font-weight:800; font-size:18px;">0/1</div></div>
+        <div class="stat-card"><span style="font-size:10px;">SOCIALS</span><div id="tProg" style="color:var(--neon); font-weight:800; font-size:18px;">0/1</div></div>
+        <div class="stat-card"><span style="font-size:10px;">VIDEOS</span><div id="vProg" style="color:var(--neon); font-weight:800; font-size:18px;">0/1</div></div>
     </div>
 
     <div style="font-weight:700; margin-bottom:15px;">Recent Transactions</div>
-    <div id="txContainer">
-        </div>
+    <div id="txContainer"></div>
 
     <nav class="bottom-nav">
         <a href="reward.html" class="nav-link" style="color:var(--neon);"><i class="fas fa-home"></i>Home</a>
-        <a href="withdraw.html" class="nav-link"><i class="fas fa-wallet"></i>Withdraw</a>
         <a href="upgrade.html" class="nav-link upgrade-pill">UPGRADE</a>
         <a href="profile.html" class="nav-link"><i class="fas fa-user-circle"></i>Profile</a>
     </nav>
@@ -96,16 +78,17 @@
             const { data: { user } } = await supabaseClient.auth.getUser();
             if(!user) { window.location.href='index.html'; return; }
             
-            let { data: profile } = await supabaseClient.from('profiles').select('*').eq('id', user.id).single();
+            // Pulling ONLY the 3 columns from your table
+            let { data: profile } = await supabaseClient.from('profiles').select('balance, tax_claimed, v_done').eq('id', user.id).single();
+            
             if(profile) {
                 currentBalance = profile.balance || 0;
                 document.getElementById('userName').innerText = user.email.split('@')[0].toUpperCase();
                 document.getElementById('userInit').innerText = user.email.charAt(0).toUpperCase();
-                document.getElementById('vProg').innerText = (profile.v_done ? "1/1" : "0/1");
-                document.getElementById('tProg').innerText = (profile.t_done ? "1/1" : "0/1");
                 
-                // Set Plan UI
-                document.getElementById('planLabel').innerText = profile.is_premium ? "Premium Plan" : "Free Plan";
+                // Matches your order: tax_claimed then v_done
+                document.getElementById('tProg').innerText = (profile.tax_claimed ? "1/1" : "0/1");
+                document.getElementById('vProg').innerText = (profile.v_done ? "1/1" : "0/1");
                 
                 updateBalanceDisplay();
                 loadHistory(profile);
@@ -114,37 +97,26 @@
 
         function updateBalanceDisplay() {
             const bTxt = document.getElementById('balTxt');
-            const label = document.getElementById('curLabel');
-            if(isNaira) {
-                bTxt.innerText = "₦" + currentBalance.toLocaleString();
-                label.innerText = "NAIRA";
-            } else {
-                bTxt.innerText = "€" + (currentBalance / 2000).toLocaleString();
-                label.innerText = "EURO";
-            }
+            bTxt.innerText = isNaira ? "₦" + currentBalance.toLocaleString() : "€" + (currentBalance / 2000).toLocaleString();
         }
 
-        function toggleCur() { isNaira = !isNaira; updateBalanceDisplay(); }
+        function toggleCur() { isNaira = !isNaira; document.getElementById('curLabel').innerText = isNaira ? "NAIRA" : "EURO"; updateBalanceDisplay(); }
 
         function loadHistory(profile) {
             const container = document.getElementById('txContainer');
             container.innerHTML = "";
+            if(profile.tax_claimed) addTx(container, "Social Reward", "Telegram task income", 2000);
             if(profile.v_done) addTx(container, "Video Reward", "Ad watch income", 3000);
-            if(profile.t_done) addTx(container, "Social Reward", "Telegram task income", 2000);
             addTx(container, "Welcome Bonus", "Registration cashback", 14000);
         }
 
         function addTx(container, title, desc, amt) {
             const card = document.createElement('div');
             card.className = "tx-card";
-            card.innerHTML = `<div style="display:flex; align-items:center; gap:12px;"><div class="tx-icon"><i class="fas fa-bolt"></i></div><div><span style="font-size:13px; font-weight:700; display:block;">${title}</span><span style="font-size:10px; color:#888;">${desc}</span></div></div><div style="color:var(--neon); font-size:13px; font-weight:800;">+₦${amt.toLocaleString()}</div>`;
+            card.innerHTML = `<div style="display:flex; align-items:center; gap:12px;"><div class="tx-icon"><i class="fas fa-bolt"></i></div><div><span style="font-size:13px; font-weight:700;">${title}</span><br><span style="font-size:10px; color:#888;">${desc}</span></div></div><div style="color:var(--neon); font-size:13px; font-weight:800;">+₦${amt.toLocaleString()}</div>`;
             container.appendChild(card);
         }
 
-        function openSidebar() { document.getElementById('sidebar').classList.add('active'); document.getElementById('overlay').classList.add('active'); }
-        function closeAll() { document.getElementById('sidebar').classList.remove('active'); document.getElementById('overlay').classList.remove('active'); document.getElementById('upgradeModal').style.display='none'; }
-        function showPop() { document.getElementById('upgradeModal').style.display='flex'; }
-        
         window.onload = loadData;
     </script>
 </body>
