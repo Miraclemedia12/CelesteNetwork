@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Celeste Dashboard</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --bg-black: #000000;        /* Pure black background */
+            --card-gray: #0a0a0a;       /* Dark card background */
+            --neon-green: #00ff66;      /* The Celeste Green from your login */
+            --text-white: #ffffff;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--bg-black);
+            color: var(--text-white);
+            margin: 0;
+            padding: 15px;
+            padding-bottom: 90px;
+        }
+
+        /* HEADER */
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 5px;
+            margin-bottom: 20px;
+        }
+        .user-circle {
+            width: 40px; height: 40px;
+            background: var(--neon-green);
+            color: black;
+            border-radius: 50%;
+            display: flex; align-items: center; justify-content: center;
+            font-weight: bold;
+        }
+
+        /* THE EARNINGS BOX (Blue box replaced with Deep Green/Black) */
+        .balance-card {
+            background: linear-gradient(135deg, #062012, var(--bg-black));
+            padding: 25px;
+            border-radius: 20px;
+            text-align: center;
+            box-shadow: 0 0 20px rgba(0, 255, 102, 0.15);
+            margin-bottom: 25px;
+            border: 1px solid rgba(0, 255, 102, 0.3);
+        }
+        .balance-card h1 { 
+            margin: 10px 0; 
+            font-size: 32px; 
+            color: var(--neon-green); /* Neon Green amount */
+        }
+        
+        .currency-switch {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            background: rgba(0, 255, 102, 0.1);
+            padding: 8px 16px;
+            border-radius: 50px;
+            font-size: 14px;
+            cursor: pointer;
+            border: 1px solid var(--neon-green);
+            color: var(--neon-green);
+        }
+
+        /* CIRCULAR QUICK TASKS */
+        .section-label { font-size: 16px; font-weight: bold; margin-bottom: 15px; display: block; color: var(--neon-green); }
+        
+        .task-container {
+            display: flex;
+            overflow-x: auto;
+            gap: 20px;
+            padding-bottom: 15px;
+            scrollbar-width: none;
+        }
+        .task-container::-webkit-scrollbar { display: none; }
+
+        .task-box { flex: 0 0 auto; text-align: center; width: 75px; }
+
+        .icon-circle {
+            width: 65px;
+            height: 65px;
+            background: transparent;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 8px;
+            border: 2px solid var(--neon-green); /* Neon Green Circles */
+            box-shadow: 0 0 10px rgba(0, 255, 102, 0.2);
+        }
+        .icon-circle i { font-size: 24px; color: var(--neon-green); }
+        .task-box span { font-size: 11px; color: #aaa; }
+
+        /* BOTTOM NAVIGATION */
+        .bottom-nav {
+            position: fixed;
+            bottom: 0; left: 0; right: 0;
+            background: #050505;
+            display: flex;
+            justify-content: space-around;
+            padding: 15px 0;
+            border-top: 1px solid rgba(0, 255, 102, 0.2);
+        }
+        .nav-item { color: #666; text-decoration: none; font-size: 11px; text-align: center; }
+        .nav-item i { font-size: 20px; display: block; margin-bottom: 4px; }
+        
+        /* Active Home and Big Upgrade Button */
+        .nav-active { color: var(--neon-green) !important; }
+        .btn-upgrade {
+            background: var(--neon-green);
+            color: black;
+            padding: 8px 18px;
+            border-radius: 8px;
+            font-weight: 800;
+            margin-top: -5px;
+            text-transform: uppercase;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="header">
+        <i class="fas fa-bars" style="color: var(--neon-green);"></i>
+        <div>Welcome, <b style="color: var(--neon-green);">BJMama</b></div>
+        <div class="user-circle">BJ</div>
+    </div>
+
+    <div class="balance-card">
+        <div style="font-size: 13px; color: #888;">Available Balance</div>
+        <h1 id="mainAmount">₦14,000.00</h1>
+        
+        <div class="currency-switch" onclick="switchCur()">
+            <span id="curLabel">Naira</span>
+            <i class="fas fa-sync-alt"></i>
+        </div>
+        <div style="margin-top: 15px; font-size: 11px; color: #ff4444;">Free Plan / 2 Days Remaining</div>
+    </div>
+
+    <span class="section-label">Quick Tasks</span>
+    <div class="task-container">
+        <div class="task-box" onclick="window.location.href='telegram.html'">
+            <div class="icon-circle"><i class="fab fa-telegram"></i></div>
+            <span>Telegram</span>
+        </div>
+        <div class="task-box" onclick="goUpgrade('TikTok')">
+            <div class="icon-circle"><i class="fab fa-tiktok"></i></div>
+            <span>TikTok</span>
+        </div>
+        <div class="task-box" onclick="goUpgrade('YouTube')">
+            <div class="icon-circle"><i class="fab fa-youtube"></i></div>
+            <span>YouTube</span>
+        </div>
+        <div class="task-box" onclick="goUpgrade('Casino')">
+            <div class="icon-circle"><i class="fas fa-dice"></i></div>
+            <span>Casino</span>
+        </div>
+    </div>
+
+    <nav class="bottom-nav">
+        <a href="withdraw.html" class="nav-item"><i class="fas fa-wallet"></i>Withdraw</a>
+        <a href="index.html" class="nav-item nav-active"><i class="fas fa-home"></i>Home</a>
+        <a href="upgrade.html" class="nav-item btn-upgrade">UPGRADE</a>
+        <a href="profile.html" class="nav-item"><i class="fas fa-user-circle"></i>Profile</a>
+    </nav>
+
+    <script>
+        let isNaira = true;
+        function switchCur() {
+            const amt = document.getElementById('mainAmount');
+            const lbl = document.getElementById('curLabel');
+            if(isNaira) {
+                amt.innerText = "€7.00";
+                lbl.innerText = "Euro";
+            } else {
+                amt.innerText = "₦14,000.00";
+                lbl.innerText = "Naira";
+            }
+            isNaira = !isNaira;
+        }
+
+        function goUpgrade(task) {
+            alert(task + " is locked. Upgrade to unlock!");
+            window.location.href = "upgrade.html";
+        }
+    </script>
+</body>
+  </html>
+
