@@ -45,8 +45,7 @@
 
         .btn-claim { background: #fff; display: none; }
 
-        /* Locked State UI */
-        .locked-state { display: none; } /* Hidden by default */
+        .locked-state { display: none; } 
         .locked-wrapper { opacity: 0.4; filter: grayscale(1); background: #111; pointer-events: none; }
         .premium-tag { 
             position: absolute; top: 10px; right: 10px; background: #ffcc00; 
@@ -54,7 +53,6 @@
             font-size: 10px; font-weight: 900; z-index: 10; 
         }
         
-        /* Modal */
         #upgradeModal { 
             position: fixed; top: 0; left: 0; width: 100%; height: 100%; 
             background: rgba(0,0,0,0.95); display: none; align-items: center; 
@@ -76,22 +74,20 @@
 
     <div class="header">
         <a href="reward.html" class="back-btn"><i class="fas fa-arrow-left"></i></a>
-        <h2 style="margin:0;">video Tasks</h2>
+        <h2 style="margin:0;">Video Tasks</h2>
     </div>
 
-    <!-- AD #1 (Becomes locked forever after one use) -->
     <div class="video-container" id="ad1Container">
-        <!-- Active View -->
         <div id="ad1Active">
             <div class="video-wrapper">
-                <video id="mainVideo" playsinline preload="auto">
-                    <video src="video.mp4" controls></video>
+                <video id="mainVideo" playsinline muted>
+                    <source src="video.mp4" type="video/mp4">
                 </video>
                 <div class="progress-bar" id="vProgress"></div>
             </div>
             <div class="v-info">
                 <div style="display: flex; justify-content: space-between; align-items: center;">
-                    <h3>Free plan #1</h3>
+                    <h3>Free Plan #1</h3>
                     <span style="color: var(--neon); font-weight: 800;">+₦3,000</span>
                 </div>
                 <p id="statusMsg">Watch the trial video to claim your first reward.</p>
@@ -100,7 +96,6 @@
             <button class="btn-action btn-claim" id="claimBtn" onclick="claim()">Claim Reward</button>
         </div>
 
-        <!-- Locked View for Ad 1 (Hidden until claimed) -->
         <div id="ad1Locked" class="locked-state" onclick="showPop()">
             <div class="video-wrapper locked-wrapper">
                 <i class="fas fa-lock" style="font-size: 40px; color: #ffcc00;"></i>
@@ -113,7 +108,6 @@
         </div>
     </div>
 
-    <!-- PREMIUM VIDEO 2 (LOCKED FOREVER) -->
     <div class="video-container" onclick="showPop()">
         <span class="premium-tag"><i class="fas fa-crown"></i> PREMIUM</span>
         <div class="video-wrapper locked-wrapper">
@@ -126,82 +120,77 @@
         <button class="btn-action" style="background: #111; color: #444;">Unlock Video</button>
     </div>
 
-    <!-- Upgrade Modal -->
     <div id="upgradeModal">
         <div class="modal-box">
             <i class="fas fa-lock" style="font-size: 45px; color: var(--neon); margin-bottom: 15px;"></i>
-            <h2 style="color: #fff;">Free Trial Over</h2>
-            <p style="color: #888; font-size: 14px; margin-bottom: 25px;">You have exhausted your free trial ad. To continue watching videos and earning daily, please upgrade to a higher plan.</p>
+            <h2 style="color: #fff;">Premium Task</h2>
+            <p style="color: #888; font-size: 14px; margin-bottom: 25px;">You have exhausted your free trial or this is a premium task. Upgrade to continue earning daily.</p>
             <a href="upgrade.html" class="m-link">Upgrade Plan Now</a>
             <button onclick="closePop()" style="background:transparent; color:#fff; border:1px solid #333; width:100%; padding:12px; border-radius:12px; cursor:pointer;">Go Back</button>
         </div>
     </div>
 
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script>
-        function showPop() { document.getElementById('upgradeModal').style.display = 'flex'; }
-        function closePop() { document.getElementById('upgradeModal').style.display = 'none'; }
+        const supabaseClient = supabase.createClient('https://gbmpenlojubfkvqeyxkh.supabase.co', 'sb_publishable_rYaNpJ5Ngw35pxv4TFmXQw_6-LrYGo-');
+
+        async function checkStatus() {
+            const { data: { user } } = await supabaseClient.auth.getUser();
+            if(!user) return;
+
+            let { data: profile } = await supabaseClient.from('profiles').select('v_done').eq('id', user.id).single();
+            
+            if(profile && profile.v_done) {
+                document.getElementById('ad1Active').style.display = 'none';
+                document.getElementById('ad1Locked').style.display = 'block';
+            }
+        }
 
         function playVideo() {
-            // Extra safety check
-            if(localStorage.getItem('v_done')) {
-                showPop();
-                return;
-            }
-
             const video = document.getElementById('mainVideo');
             const btn = document.getElementById('startBtn');
             const bar = document.getElementById('vProgress');
 
             btn.disabled = true;
-            btn.innerText = "Processing... Stay on page";
-            btn.style.opacity = "0.5";
+            btn.innerText = "Watching... Stay on page";
             
-            video.play().catch(e => console.log("Video play failed, check Video.mp4 exists"));
+            video.muted = false; 
+            video.play();
 
-            let progress = 0;
-            let timer = setInterval(() => {
-                progress += 0.5;
+            video.ontimeupdate = () => {
+                let progress = (video.currentTime / video.duration) * 100;
                 bar.style.width = progress + "%";
-                if(progress >= 100) {
-                    clearInterval(timer);
-                    video.pause();
-                    complete();
-                }
-            }, 150); 
+            };
+
+            video.onended = () => {
+                document.getElementById('startBtn').style.display = "none";
+                document.getElementById('claimBtn').style.display = "block";
+                document.getElementById('statusMsg').innerText = "Trial finished! Claim your profit.";
+            };
         }
 
-        function complete() {
-            document.getElementById('startBtn').style.display = "none";
-            document.getElementById('claimBtn').style.display = "block";
-            document.getElementById('statusMsg').innerText = "Trial finished! Claim your profit.";
-        }
+        async function claim() {
+            const { data: { user } } = await supabaseClient.auth.getUser();
+            
+            // Get current balance
+            let { data: profile } = await supabaseClient.from('profiles').select('balance').eq('id', user.id).single();
+            let newBalance = (profile.balance || 0) + 3000;
 
-        function claim() {
-            let currentBal = parseFloat(localStorage.getItem('celeste_bal')) || 14000;
-            localStorage.setItem('celeste_bal', currentBal + 3000);
-            localStorage.setItem('v_done', '1'); // This flag makes it locked forever
+            // Update Database
+            const { error } = await supabaseClient
+                .from('profiles')
+                .update({ balance: newBalance, v_done: true })
+                .eq('id', user.id);
 
-            let history = JSON.parse(localStorage.getItem('celeste_history') || "[]");
-            history.push({
-                title: "Trial Ad Income",
-                desc: "One-time free trial reward",
-                amt: 3000,
-                id: Date.now()
-            });
-            localStorage.setItem('celeste_history', JSON.stringify(history));
-
-            window.location.href = 'reward.html';
-        }
-
-        // Run this check when the page loads
-        window.onload = function() {
-            if(localStorage.getItem('v_done')) {
-                // If the ad was already watched, hide the active view and show the locked view
-                document.getElementById('ad1Active').style.display = 'none';
-                document.getElementById('ad1Locked').style.display = 'block';
+            if (!error) {
+                window.location.href = 'reward.html';
             }
         }
+
+        function showPop() { document.getElementById('upgradeModal').style.display = 'flex'; }
+        function closePop() { document.getElementById('upgradeModal').style.display = 'none'; }
+        
+        window.onload = checkStatus;
     </script>
 </body>
 </html>
-
