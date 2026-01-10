@@ -59,36 +59,37 @@
         const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
         async function handleSignUp() {
-    const email = document.getElementById('email').value;
-    const password = document.getElementById('password').value;
-    const messageDiv = document.getElementById('message');
-    const regBtn = document.getElementById('regBtn');
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+            const messageDiv = document.getElementById('message');
+            const regBtn = document.getElementById('regBtn');
 
-    if(!email || !password) {
-        messageDiv.innerText = "Email and Password are required.";
-        return;
-    }
+            if(!email || !password) {
+                messageDiv.style.color = "#ff4444";
+                messageDiv.innerText = "Email and Password are required.";
+                return;
+            }
 
-    regBtn.innerText = "Processing...";
-    
-    // Only create the Auth Login. The SQL Trigger we ran 
-    // in Step 1 will handle the profile table automatically.
-    const { data, error } = await supabaseClient.auth.signUp({
-        email: email,
-        password: password
-    });
+            regBtn.innerText = "Processing...";
+            
+            // This creates the account login
+            const { data, error } = await supabaseClient.auth.signUp({
+                email: email,
+                password: password
+            });
 
-    if (error) {
-        regBtn.innerText = "REGISTER";
-        messageDiv.style.color = "#ff4444";
-        messageDiv.innerText = error.message;
-    } else {
-        messageDiv.style.color = "#00ff55";
-        messageDiv.innerText = "Success! Redirecting...";
-        setTimeout(() => { window.location.href = 'reward.html'; }, 2000);
-    }
-}
-
+            if (error) {
+                regBtn.innerText = "REGISTER";
+                messageDiv.style.color = "#ff4444";
+                messageDiv.innerText = error.message;
+            } else {
+                messageDiv.style.color = "#00ff55";
+                messageDiv.innerText = "Success! Redirecting...";
+                // Redirecting to your dashboard
+                setTimeout(() => { 
+                    window.location.href = 'reward.html'; 
+                }, 2000);
+            }
         }
     </script>
 </body>
