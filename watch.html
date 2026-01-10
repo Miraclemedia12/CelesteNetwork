@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Watch Ads | Celeste</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --neon: #00ff55;
+            --bg: #000000;
+            --card: #0a0a0a;
+        }
+
+        body { 
+            background: var(--bg); color: #fff; font-family: 'Inter', sans-serif; 
+            margin: 0; padding: 20px; padding-bottom: 50px;
+        }
+
+        .header { display: flex; align-items: center; gap: 15px; margin-bottom: 30px; }
+        .back-btn { color: #fff; font-size: 20px; text-decoration: none; }
+
+        .video-container {
+            background: var(--card); border: 1px solid #222;
+            border-radius: 24px; padding: 15px; margin-bottom: 25px;
+            position: relative; overflow: hidden;
+        }
+
+        .video-wrapper {
+            width: 100%; border-radius: 15px; background: #000;
+            border: 1px solid #333; overflow: hidden; position: relative;
+            aspect-ratio: 16/9; display: flex; align-items: center; justify-content: center;
+        }
+
+        /* --- HOW TO UPLOAD YOUR VIDEO ---
+           Replace the 'src' in the video tag below with your link.
+           Example: src="https://yourdomain.com/ad-video.mp4"
+        */
+        video { width: 100%; height: 100%; object-fit: cover; display: none; }
+
+        .video-placeholder-ui { text-align: center; }
+        .video-placeholder-ui i { font-size: 50px; color: var(--neon); margin-bottom: 10px; }
+
+        .progress-bar {
+            position: absolute; bottom: 0; left: 0; height: 5px;
+            background: var(--neon); width: 0%; transition: 0.1s linear;
+            box-shadow: 0 0 10px var(--neon);
+        }
+
+        .v-info { margin-top: 15px; }
+        .v-info h3 { margin: 0; font-size: 16px; color: #fff; }
+        .v-info p { margin: 5px 0 0; font-size: 12px; color: #888; }
+
+        .btn-action {
+            background: var(--neon); color: #000; border: none;
+            width: 100%; padding: 16px; border-radius: 14px;
+            font-weight: 800; margin-top: 15px; cursor: pointer;
+            text-transform: uppercase; font-size: 13px;
+        }
+
+        .btn-claim { background: #fff; display: none; }
+
+        /* Locked / Premium Overlay */
+        .locked-wrapper { opacity: 0.3; filter: grayscale(1); pointer-events: none; }
+        .premium-tag {
+            position: absolute; top: 10px; right: 10px; background: #ffcc00;
+            color: #000; padding: 4px 10px; border-radius: 6px;
+            font-size: 10px; font-weight: 900; z-index: 10;
+        }
+
+        /* Modal styling (Same as Dashboard) */
+        #upgradeModal {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.95); display: none; align-items: center;
+            justify-content: center; z-index: 5000; padding: 20px;
+        }
+        .modal-box {
+            background: #0d0d0d; border: 1px solid var(--neon);
+            padding: 30px 20px; border-radius: 25px; width: 100%; max-width: 350px;
+            text-align: center; box-shadow: 0 0 30px rgba(0,255,85,0.2);
+        }
+        .m-link {
+            background: var(--neon); color: #000; display: block;
+            padding: 15px; border-radius: 12px; font-weight: 800;
+            text-decoration: none; margin-bottom: 10px; text-transform: uppercase;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="header">
+        <a href="reward.html" class="back-btn"><i class="fas fa-arrow-left"></i></a>
+        <h2 style="margin:0;">Watch Tasks</h2>
+    </div>
+
+    <!-- FREE VIDEO 1 -->
+    <div class="video-container" id="freeAd">
+        <div class="video-wrapper">
+            <!-- Add your video link here -->
+            <video id="mainVideo" playsinline>
+                <source src="YOUR_VIDEO_URL_HERE.mp4" type="video/mp4">
+            </video>
+            
+            <div class="video-placeholder-ui" id="uiPlaceholder">
+                <i class="fas fa-play-circle"></i>
+                <div style="font-size: 12px; color: #555;">Ready to play</div>
+            </div>
+
+            <div class="progress-bar" id="vProgress"></div>
+        </div>
+
+        <div class="v-info">
+            <div style="display: flex; justify-content: space-between; align-items: center;">
+                <h3>Standard Ad #1</h3>
+                <span style="color: var(--neon); font-weight: 800;">₦3,000</span>
+            </div>
+            <p id="statusMsg">Watch for 30 seconds to earn reward.</p>
+        </div>
+
+        <button class="btn-action" id="startBtn" onclick="playVideo()">Start Video</button>
+        <button class="btn-action btn-claim" id="claimBtn" onclick="claim()">Claim Reward</button>
+    </div>
+
+    <!-- LOCKED VIDEO 2 -->
+    <div class="video-container" onclick="showPop()">
+        <span class="premium-tag"><i class="fas fa-crown"></i> PREMIUM</span>
+        <div class="video-wrapper locked-wrapper">
+            <i class="fas fa-lock" style="font-size: 40px; color: #ffcc00; opacity: 1;"></i>
+        </div>
+        <div class="v-info">
+            <h3>Premium Ad #2</h3>
+            <p>Upgrade to earn ₦5,000 extra daily.</p>
+        </div>
+        <button class="btn-action" style="background: #111; color: #444;">Unlock Video</button>
+    </div>
+
+    <!-- Upgrade Modal -->
+    <div id="upgradeModal">
+        <div class="modal-box">
+            <i class="fas fa-lock-open" style="font-size: 40px; color: var(--neon); margin-bottom: 15px;"></i>
+            <h2 style="margin-bottom: 10px;">Premium Access</h2>
+            <p style="color: #888; font-size: 14px; margin-bottom: 25px;">You are currently on the Free Plan. Upgrade now to unlock daily Premium Ads and earn more!</p>
+            <a href="upgrade.html" class="m-link">Upgrade Plan Now</a>
+            <button onclick="closePop()" style="background:transparent; color:#fff; border:1px solid #333; width:100%; padding:12px; border-radius:12px;">Go Back</button>
+        </div>
+    </div>
+
+    <script>
+        function showPop() { document.getElementById('upgradeModal').style.display = 'flex'; }
+        function closePop() { document.getElementById('upgradeModal').style.display = 'none'; }
+
+        function playVideo() {
+            let done = localStorage.getItem('v_done');
+            if(done) return;
+
+            const btn = document.getElementById('startBtn');
+            const video = document.getElementById('mainVideo');
+            const ui = document.getElementById('uiPlaceholder');
+            const bar = document.getElementById('vProgress');
+
+            btn.disabled = true;
+            btn.innerText = "DO NOT CLOSE THIS PAGE...";
+            btn.style.opacity = "0.5";
+            ui.style.display = "none";
+            video.style.display = "block";
+            
+            // Note: Since we don't have a real video file, we simulate progress
+            // If you use a real video, you can use video.play()
+            let progress = 0;
+            let timer = setInterval(() => {
+                progress += 1;
+                bar.style.width = progress + "%";
+                if(progress >= 100) {
+                    clearInterval(timer);
+                    complete();
+                }
+            }, 150); // approx 15 seconds simulation. Adjust to 300 for 30s.
+        }
+
+        function complete() {
+            document.getElementById('startBtn').style.display = "none";
+            document.getElementById('claimBtn').style.display = "block";
+            document.getElementById('statusMsg').innerText = "Ad complete! Claim your ₦3,000.";
+            document.getElementById('statusMsg').style.color = var(--neon);
+        }
+
+        function claim() {
+            let currentBal = parseFloat(localStorage.getItem('celeste_bal')) || 14000;
+            localStorage.setItem('celeste_bal', currentBal + 3000);
+            localStorage.setItem('v_done', '1');
+
+            let history = JSON.parse(localStorage.getItem('celeste_history') || "[]");
+            history.push({
+                title: "Ad Watch Income",
+                desc: "Earn from video watch",
+                amt: 3000,
+                id: Date.now()
+            });
+            localStorage.setItem('celeste_history', JSON.stringify(history));
+
+            window.location.href = 'reward.html';
+        }
+
+        window.onload = function() {
+            if(localStorage.getItem('v_done')) {
+                document.getElementById('startBtn').innerText = "Ad Already Watched";
+                document.getElementById('startBtn').disabled = true;
+                document.getElementById('startBtn').style.opacity = "0.2";
+            }
+        }
+    </script>
+</body>
+</html>
+
+              
