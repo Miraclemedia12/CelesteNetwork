@@ -20,7 +20,6 @@
         .task-container { width: 100%; max-width: 400px; display: flex; flex-direction: column; gap: 25px; }
         .task-card { background: var(--card); border-radius: 28px; padding: 25px; position: relative; overflow: hidden; border: 1px solid #1a1a1a; }
         
-        /* Matching the green tag in your screenshot */
         .reward-tag { position: absolute; top: 0; right: 0; background: var(--neon); color: #000; padding: 8px 16px; font-size: 12px; font-weight: 900; border-bottom-left-radius: 20px; }
 
         .task-info { display: flex; align-items: center; gap: 18px; margin-bottom: 20px; }
@@ -33,19 +32,23 @@
         .btn-join { background: var(--tg-blue); color: #fff; }
         .btn-claim { background: #ffffff; color: #000; }
         
-        /* HARD LOCK STYLE */
-        .btn-locked { background: #1a1a1a !important; color: #444 !important; border: 1px solid #222 !important; cursor: not-allowed !important; pointer-events: none !important; opacity: 0.6; }
+        /* THE FIX: Hard Locked Class */
+        .btn-locked { 
+            background: #1a1a1a !important; 
+            color: #444 !important; 
+            border: 1px solid #222 !important; 
+            cursor: not-allowed !important; 
+            pointer-events: none !important; /* Makes button unclickable */
+            opacity: 0.6; 
+        }
         
         .verify-box { color: var(--tg-blue); font-size: 12px; font-weight: 700; margin-top: 12px; text-align: center; display: block; letter-spacing: 1px; }
         .hidden { display: none; }
-        
         .status-note { font-size: 10px; color: var(--text-dim); text-align: center; margin-top: 12px; display: block; text-transform: uppercase; letter-spacing: 2px; font-weight: 600; }
 
-        /* UPGRADE MODAL */
         #upgradeModal { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.97); display: none; align-items: center; justify-content: center; z-index: 9999; padding: 20px; }
-        .modal-box { background: #0a0a0a; border: 1px solid var(--neon); padding: 40px 25px; border-radius: 35px; width: 100%; max-width: 350px; text-align: center; box-shadow: 0 0 30px rgba(0,255,85,0.1); }
+        .modal-box { background: #0a0a0a; border: 1px solid var(--neon); padding: 40px 25px; border-radius: 35px; width: 100%; max-width: 350px; text-align: center; }
         .m-link { background: var(--neon); color: #000; display: block; padding: 18px; border-radius: 15px; font-weight: 900; text-decoration: none; margin-bottom: 12px; text-transform: uppercase; font-size: 14px; }
-        .m-back { background: transparent; color: #555; border: 1px solid #222; width: 100%; padding: 14px; border-radius: 15px; cursor: pointer; font-weight: 700; }
     </style>
 </head>
 <body>
@@ -60,7 +63,7 @@
     </div>
 
     <div class="task-container">
-        <div class="task-card" id="card1">
+        <div class="task-card">
             <div class="reward-tag">₦2,000</div>
             <div class="task-info">
                 <div class="tg-icon"><i class="fab fa-telegram-plane"></i></div>
@@ -75,7 +78,7 @@
             <span id="note1" class="status-note">TASK ACTIVE</span>
         </div>
 
-        <div class="task-card" id="card2">
+        <div class="task-card">
             <div class="reward-tag">₦2,000</div>
             <div class="task-info">
                 <div class="tg-icon"><i class="fab fa-telegram-plane"></i></div>
@@ -94,10 +97,9 @@
     <div id="upgradeModal">
         <div class="modal-box">
             <i class="fas fa-lock" style="font-size: 50px; color: var(--neon); margin-bottom: 25px;"></i>
-            <h2 style="color: #fff; margin-bottom: 10px;">Trial Completed</h2>
-            <p style="color: #888; font-size: 14px; line-height: 1.6; margin-bottom: 30px;">All daily trial community nodes have been authorized. Upgrade to Premium for higher limits.</p>
+            <h2 style="color: #fff;">Trial Completed</h2>
+            <p style="color: #888; font-size: 14px; margin-bottom: 30px;">Daily trial community rewards are exhausted. Upgrade for full access.</p>
             <a href="upgrade.html" class="m-link">Upgrade Account</a>
-            <button class="m-back" onclick="location.href='reward.html'">Return Home</button>
         </div>
     </div>
 
@@ -111,12 +113,12 @@
 
         async function init() {
             const { data: { user } } = await supabaseClient.auth.getUser();
-            if(!user) { window.location.href='index.html'; return; }
+            if(!user) return;
             
             const { data } = await supabaseClient.from('profiles').select('*').eq('id', user.id).single();
             userProfile = data;
 
-            // IF BOTH DONE - SHOW UPGRADE
+            // 1. Check if everything is done
             if(userProfile.t1_done && userProfile.t2_done) {
                 document.getElementById('upgradeModal').style.display = 'flex';
                 lockButton(1, "VERIFIED ✅");
@@ -124,25 +126,23 @@
                 return;
             }
 
-            // TASK 1 LOGIC
+            // 2. Lock/Unlock Task 1
             if(userProfile.t1_done) {
                 lockButton(1, "VERIFIED ✅");
                 
-                // CHECK IF TASK 2 SHOULD BE OPEN OR LOCKED
-                const lastClaimDate = localStorage.getItem('t1_claim_date');
+                // 3. Strict Check for Task 2
+                const lastClaim = localStorage.getItem('t1_claim_date');
                 const today = new Date().toDateString();
                 
-                if (lastClaimDate === today) {
-                    // HARD LOCK FOR TASK 2 (User is on cooldown)
+                if (lastClaim === today) {
+                    // This creates the dead, unclickable state shown in your screenshot
                     lockButton(2, "JOIN SECTOR"); 
-                    document.getElementById('btn2').classList.add('btn-locked');
                     document.getElementById('note2').innerText = "UNLOCKS TOMORROW";
                 } else {
-                    // It's a new day, keep Task 2 active
                     document.getElementById('note2').innerText = "TASK ACTIVE";
                 }
             } else {
-                // Lock Task 2 until Task 1 is finished
+                // Task 1 not done yet, Task 2 stays locked
                 lockButton(2, "LOCKED 🔒");
             }
         }
@@ -150,17 +150,14 @@
         function lockButton(num, text) {
             const btn = document.getElementById(`btn${num}`);
             btn.innerText = text;
-            btn.classList.add('btn-locked');
-            btn.classList.remove('btn-join');
-            btn.removeAttribute('href');
-            btn.style.pointerEvents = "none";
+            btn.className = "btn btn-locked"; // Applies the dead styles
+            btn.removeAttribute('href');      // Removes the link
+            btn.style.pointerEvents = "none"; // Disables all clicking
+            btn.onclick = (e) => e.preventDefault();
         }
 
         function showClaim(num) {
-            const btn = document.getElementById(`btn${num}`);
-            if(btn.classList.contains('btn-locked')) return;
-
-            btn.classList.add('hidden');
+            document.getElementById(`btn${num}`).classList.add('hidden');
             document.getElementById(`verify${num}`).classList.remove('hidden');
             setTimeout(() => {
                 document.getElementById(`verify${num}`).classList.add('hidden');
@@ -171,7 +168,6 @@
         async function processReward(num) {
             const claimBtn = document.getElementById(`claim${num}`);
             claimBtn.disabled = true;
-            claimBtn.innerText = "Processing...";
 
             const { data: profile } = await supabaseClient.from('profiles').select('balance').eq('id', userProfile.id).single();
             const newBalance = (Number(profile.balance) || 0) + 2000;
@@ -184,7 +180,7 @@
             if(num === 2) updateObj.t2_done = true;
 
             await supabaseClient.from('profiles').update(updateObj).eq('id', userProfile.id);
-            window.location.href = 'reward.html';
+            window.location.reload(); // Refresh to trigger the locks
         }
 
         window.onload = init;
