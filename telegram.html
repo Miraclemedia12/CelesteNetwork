@@ -30,7 +30,7 @@
         .btn { display: block; width: 100%; padding: 16px; border-radius: 16px; border: none; font-weight: 800; text-transform: uppercase; cursor: pointer; text-decoration: none; text-align: center; font-size: 13px; transition: 0.3s; }
         .btn-join { background: var(--tg-blue); color: #fff; }
         .btn-claim { background: #fff; color: #000; }
-        .btn-locked { background: #151515; color: #444; cursor: not-allowed; border: 1px solid #222; }
+        .btn-locked { background: #151515 !important; color: #444 !important; cursor: not-allowed !important; border: 1px solid #222; pointer-events: none; }
         
         .verify-box { color: var(--tg-blue); font-size: 11px; font-weight: 700; margin-top: 10px; text-align: center; display: block; }
         .hidden { display: none; }
@@ -51,7 +51,7 @@
 
     <div class="header">
         <h1>TELEGRAM TASKS</h1>
-        <p>Complete the requirements below to authorize your daily reward distribution.</p>
+        <p>Complete your tasks to claim your Reward.</p>
     </div>
 
     <div class="task-container">
@@ -111,17 +111,16 @@
             const { data } = await supabaseClient.from('profiles').select('*').eq('id', user.id).single();
             userProfile = data;
 
-            // Check if both are done
             if(userProfile.t1_done && userProfile.t2_done) {
                 document.getElementById('upgradeModal').style.display = 'flex';
+                lockButton(1, "Verified ✅");
+                lockButton(2, "Verified ✅");
                 return;
             }
 
-            // Task 1 Status
             if(userProfile.t1_done) {
                 lockButton(1, "Verified ✅");
                 
-                // Logic for Task 2 Cooldown
                 const lastClaim = localStorage.getItem('t1_claim_date');
                 const today = new Date().toDateString();
                 
@@ -130,17 +129,24 @@
                     document.getElementById('note2').innerText = "Cooldown: 24h";
                 }
             } else {
+                // HARD LOCK TASK 2
                 lockButton(2, "Locked 🔒");
             }
         }
 
         function lockButton(num, text) {
             const btn = document.getElementById(`btn${num}`);
-            btn.innerText = text; btn.className = "btn btn-locked";
-            btn.removeAttribute('href'); btn.onclick = (e) => e.preventDefault();
+            btn.innerText = text;
+            btn.className = "btn btn-locked";
+            btn.removeAttribute('href');
+            btn.style.pointerEvents = "none"; // This makes it physically unclickable
+            btn.onclick = (e) => { e.preventDefault(); return false; };
         }
 
         function showClaim(num) {
+            // Safety check: don't show claim if button is locked
+            if(document.getElementById(`btn${num}`).classList.contains('btn-locked')) return;
+
             document.getElementById(`btn${num}`).classList.add('hidden');
             document.getElementById(`verify${num}`).classList.remove('hidden');
             setTimeout(() => {
@@ -151,9 +157,9 @@
 
         async function processReward(num) {
             const claimBtn = document.getElementById(`claim${num}`);
-            claimBtn.disabled = true; claimBtn.innerText = "Syncing...";
+            claimBtn.disabled = true; 
+            claimBtn.innerText = "Syncing...";
 
-            // Fresh balance fetch
             const { data: profile } = await supabaseClient.from('profiles').select('balance').eq('id', userProfile.id).single();
             const newBalance = (Number(profile.balance) || 0) + 2000;
 
