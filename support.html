@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Customer Support | CELESTE</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;800&display=swap');
+
+        body { 
+            font-family: 'Plus Jakarta Sans', sans-serif; 
+            background: radial-gradient(circle at top right, #003311 0%, #001a09 40%, #000000 100%);
+            display: flex; 
+            justify-content: center; 
+            align-items: center; 
+            height: 100vh; 
+            margin: 0; 
+            color: white;
+            overflow: hidden;
+        }
+
+        .auth-container { 
+            background: rgba(0, 0, 0, 0.6); 
+            padding: 40px 30px; 
+            border-radius: 24px; 
+            box-shadow: 0 20px 50px rgba(0, 255, 85, 0.1); 
+            width: 100%; 
+            max-width: 400px; 
+            text-align: center; 
+            border: 1px solid rgba(0, 255, 85, 0.15);
+            backdrop-filter: blur(15px);
+        }
+
+        h2 { 
+            color: #00ff55; 
+            font-size: 32px; 
+            font-weight: 800; 
+            margin-bottom: 8px; 
+            letter-spacing: -1px;
+            text-transform: uppercase;
+        }
+
+        p { color: #88aa99; margin-bottom: 35px; font-size: 15px; font-weight: 500; }
+        
+        .support-card {
+            background: rgba(0, 40, 20, 0.4);
+            border: 1px solid rgba(0, 255, 85, 0.1);
+            border-radius: 18px;
+            padding: 20px;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            text-decoration: none;
+            color: white;
+            transition: all 0.3s ease;
+            text-align: left;
+        }
+
+        .support-card:hover {
+            background: rgba(0, 60, 30, 0.6);
+            border-color: #00ff55;
+            transform: translateX(5px);
+        }
+
+        .icon-box {
+            width: 45px;
+            height: 45px;
+            background: rgba(0, 255, 85, 0.1);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #00ff55;
+            font-size: 20px;
+        }
+
+        .card-text b { display: block; font-size: 14px; text-transform: uppercase; letter-spacing: 1px; color: #00ff55; }
+        .card-text span { font-size: 12px; color: #88aa99; }
+
+        .back-btn {
+            margin-top: 25px;
+            display: inline-block;
+            color: #668877;
+            font-size: 13px;
+            text-decoration: none;
+            font-weight: bold;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .back-btn:hover { color: #00ff55; }
+    </style>
+</head>
+<body>
+
+    <div class="auth-container">
+        <h2>SUPPORT</h2>
+        <p>Connect with the Celeste Elite Admin.</p>
+        
+        <a href="https://wa.me/23409034634500" class="support-card">
+            <div class="icon-box"><i class="fab fa-whatsapp"></i></div>
+            <div class="card-text">
+                <b>Direct Message</b>
+                <span>Chat with Admin Andy</span>
+            </div>
+        </a>
+
+        <a href="https://t.me/your_channel_link" class="support-card">
+            <div class="icon-box"><i class="fab fa-telegram-plane"></i></div>
+            <div class="card-text">
+                <b>Join Channel</b>
+                <span>Get latest node updates</span>
+            </div>
+        </a>
+
+        <a href="mailto:mirilessokon@gmail.com?subject=Celeste%20Protocol%20Help&body=Full%20Name:%20%0D%0APhone:%20%0D%0AIssue:%20" class="support-card">
+            <div class="icon-box"><i class="fas fa-envelope"></i></div>
+            <div class="card-text">
+                <b>Email Protocol</b>
+                <span>Send technical details</span>
+            </div>
+        </a>
+        
+        <a href="reward.html" class="back-btn">Return to Portal</a>
+    </div>
+
+</body>
+</html>
+
