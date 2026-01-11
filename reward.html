@@ -128,68 +128,83 @@
         let profileData = null;
 
         async function loadData() {
-            const { data: { user } } = await supabaseClient.auth.getUser();
-            if(!user) { window.location.href='index.html'; return; }
+            try {
+                const { data: { user } } = await supabaseClient.auth.getUser();
+                if(!user) { window.location.href='index.html'; return; }
 
-            // 1. Email Verification Check
-            if (!user.email_confirmed_at) {
-                document.body.innerHTML = `
-                <div style="height:100vh; display:flex; flex-direction:column; align-items:center; justify-content:center; text-align:center; padding:30px; background:#000; color:#fff;">
-                    <i class="fas fa-envelope-open-text" style="font-size:50px; color:var(--neon); margin-bottom:20px;"></i>
-                    <h2>Email Not Verified</h2>
-                    <p style="color:#888;">Check <b>${user.email}</b> and click the link to claim your ₦14,000 bonus.</p>
-                    <button onclick="location.reload()" style="background:var(--neon); border:none; padding:15px 30px; border-radius:12px; font-weight:900; margin-top:20px;">I'VE VERIFIED</button>
-                    <a href="index.html" style="color:#555; margin-top:20px; text-decoration:none;">Logout</a>
-                </div>`;
-                return;
+                // Email verification check
+                if (!user.email_confirmed_at) {
+                    document.body.innerHTML = `
+                    <div style="height:100vh; display:flex; flex-direction:column; align-items:center; justify-content:center; text-align:center; padding:30px; background:#000; color:#fff;">
+                        <i class="fas fa-envelope-open-text" style="font-size:50px; color:var(--neon); margin-bottom:20px;"></i>
+                        <h2>Email Not Verified</h2>
+                        <p style="color:#888;">Check <b>${user.email}</b> and click the link to claim your ₦14,000 bonus.</p>
+                        <button onclick="location.reload()" style="background:var(--neon); border:none; padding:15px 30px; border-radius:12px; font-weight:900; margin-top:20px;">I'VE VERIFIED</button>
+                    </div>`;
+                    return;
+                }
+                
+                let { data: profile, error } = await supabaseClient.from('profiles').select('*').eq('id', user.id).single();
+                if (error) throw error;
+                
+                profileData = profile;
+
+                // Update UI elements
+                document.getElementById('userName').innerText = user.email.split('@')[0].toUpperCase();
+                document.getElementById('userInit').innerText = user.email.charAt(0).toUpperCase();
+                
+                if (profile.v_done && profile.t1_done && profile.t2_done) {
+                    document.getElementById('expiryLabel').innerText = "PLAN EXPIRED";
+                    document.getElementById('mainBalBox').style.border = "1px solid var(--danger)";
+                }
+
+                document.getElementById('vProg').innerText = (profile.v_done ? "1 / 1" : "0 / 1");
+                let tCount = (profile.t1_done ? 1 : 0) + (profile.t2_done ? 1 : 0);
+                document.getElementById('tProg').innerText = tCount + " / 2";
+
+                // Trigger UI update
+                updateUI();
+            } catch (err) {
+                console.error("Load Error:", err);
             }
-            
-            // 2. Load Profile
-            let { data: profile } = await supabaseClient.from('profiles').select('*').eq('id', user.id).single();
-            profileData = profile;
-
-            // 3. User Initials & Name
-            document.getElementById('userName').innerText = user.email.split('@')[0].toUpperCase();
-            document.getElementById('userInit').innerText = user.email.charAt(0).toUpperCase();
-            
-            // 4. Trial Expiry Check (When all free tasks are done)
-            if (profile.v_done && profile.t1_done && profile.t2_done) {
-                document.getElementById('expiryLabel').innerText = "PLAN EXPIRED";
-                document.getElementById('mainBalBox').style.border = "1px solid var(--danger)";
-            }
-
-            // 5. Update Stats
-            document.getElementById('vProg').innerText = (profile.v_done ? "1 / 1" : "0 / 1");
-            let tCount = (profile.t1_done ? 1 : 0) + (profile.t2_done ? 1 : 0);
-            document.getElementById('tProg').innerText = tCount + " / 2";
-
-            updateDisplay();
         }
 
-        function updateDisplay() {
+        function updateUI() {
+            if (!profileData) return;
+
             const balEl = document.getElementById('balTxt');
             const labelEl = document.getElementById('curLabel');
             const container = document.getElementById('txContainer');
 
-            // Balance Display
+            // 1. Fixed Currency Logic
             if(isNaira) {
-                balEl.innerText = "₦" + profileData.balance.toLocaleString();
+                balEl.innerText = "₦" + profileData.balance.toLocaleString(undefined, {minimumFractionDigits: 2});
                 labelEl.innerText = "NAIRA";
             } else {
-                balEl.innerText = "€" + (profileData.balance / 2000).toFixed(2);
+                // Calculation: 2000 Naira = 1 Euro
+                const euroVal = profileData.balance / 2000;
+                balEl.innerText = "€" + euroVal.toLocaleString(undefined, {minimumFractionDigits: 2});
                 labelEl.innerText = "EURO";
             }
             
-            // INSTANT History Rendering
+            // 2. Clear and Render History
             container.innerHTML = "";
+            
+            // Welcome Bonus
             addTx(container, "Registration Bonus", "Welcome bonus gift", 14000, "fa-gift");
+            
+            // Task Rewards
             if(profileData.v_done) addTx(container, "Video Reward", "Ad watch revenue", 3000, "fa-play-circle");
             if(profileData.t1_done) addTx(container, "Telegram Task 1", "Joined Official Channel", 2000, "fa-paper-plane");
             if(profileData.t2_done) addTx(container, "Telegram Task 2", "Joined Community Hub", 2000, "fa-check-double");
         }
 
         function addTx(container, title, desc, amt, icon) {
-            const displayVal = isNaira ? "₦" + amt.toLocaleString() : "€" + (amt / 2000).toFixed(2);
+            // Transaction amount also respects the switch
+            const displayVal = isNaira 
+                ? "₦" + amt.toLocaleString() 
+                : "€" + (amt / 2000).toLocaleString(undefined, {minimumFractionDigits: 2});
+
             const card = document.createElement('div');
             card.className = "tx-card";
             card.innerHTML = `
@@ -202,7 +217,11 @@
             container.appendChild(card);
         }
 
-        function toggleCur() { isNaira = !isNaira; updateDisplay(); }
+        function toggleCur() { 
+            isNaira = !isNaira; 
+            updateUI(); 
+        }
+
         function showPop() { document.getElementById('upgradeModal').style.display = 'flex'; }
         function closeModal() { document.getElementById('upgradeModal').style.display = 'none'; }
         function openSidebar() { document.getElementById('sidebar').classList.add('active'); document.getElementById('overlay').classList.add('active'); }
