@@ -7,10 +7,11 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         :root { --neon: #00ff55; --bg: #000000; --card: #0a0a0a; }
-        body { background: var(--bg); color: #fff; font-family: 'Inter', sans-serif; margin: 0; padding: 20px; padding-bottom: 50px; }
+        * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+        body { background: var(--bg); color: #fff; font-family: 'Inter', sans-serif; margin: 0; padding: 20px; padding-bottom: 50px; overflow-x: hidden; }
         
         .header { display: flex; align-items: center; gap: 15px; margin-bottom: 30px; }
-        .back-btn { color: #fff; font-size: 20px; text-decoration: none; }
+        .back-btn { color: #fff; font-size: 20px; text-decoration: none; opacity: 0.8; }
 
         .video-container { 
             background: var(--card); border: 1px solid #222; 
@@ -40,19 +41,27 @@
             background: var(--neon); color: #000; border: none; 
             width: 100%; padding: 16px; border-radius: 14px; 
             font-weight: 800; margin-top: 15px; cursor: pointer; 
-            text-transform: uppercase; font-size: 13px; 
+            text-transform: uppercase; font-size: 13px; transition: 0.3s;
         }
 
-        .btn-claim { background: #fff; display: none; }
+        .btn-claim { 
+            background: #ffffff; 
+            display: none; 
+            color: #000; 
+            box-shadow: 0 0 20px rgba(255,255,255,0.4); 
+            animation: pulse 1.5s infinite;
+        }
+        @keyframes pulse { 0% { transform: scale(1); } 50% { transform: scale(1.02); } 100% { transform: scale(1); } }
 
         .locked-state { display: none; } 
-        .locked-wrapper { opacity: 0.4; filter: grayscale(1); background: #111; pointer-events: none; }
+        .locked-wrapper { opacity: 0.3; filter: grayscale(1); background: #111; pointer-events: none; }
         .premium-tag { 
             position: absolute; top: 10px; right: 10px; background: #ffcc00; 
             color: #000; padding: 4px 10px; border-radius: 6px; 
             font-size: 10px; font-weight: 900; z-index: 10; 
         }
         
+        /* MODAL */
         #upgradeModal { 
             position: fixed; top: 0; left: 0; width: 100%; height: 100%; 
             background: rgba(0,0,0,0.95); display: none; align-items: center; 
@@ -68,32 +77,36 @@
             padding: 15px; border-radius: 12px; font-weight: 800; 
             text-decoration: none; margin-bottom: 10px; text-transform: uppercase; 
         }
+        .m-back { 
+            background: transparent; color: #888; border: 1px solid #222; 
+            width: 100%; padding: 12px; border-radius: 12px; cursor: pointer; 
+            font-weight: 600; margin-top: 5px; 
+        }
     </style>
 </head>
 <body>
 
     <div class="header">
-        <a href="reward.html" class="back-btn"><i class="fas fa-arrow-left"></i></a>
-        <h2 style="margin:0;">Video Tasks</h2>
+        <a href="reward.html" class="back-btn"><i class="fas fa-arrow-left"></i> Dashboard</a>
     </div>
 
     <div class="video-container" id="ad1Container">
         <div id="ad1Active">
             <div class="video-wrapper">
-                <video id="mainVideo" playsinline muted>
+                <video id="mainVideo" playsinline>
                     <source src="video.mp4" type="video/mp4">
                 </video>
                 <div class="progress-bar" id="vProgress"></div>
             </div>
             <div class="v-info">
                 <div style="display: flex; justify-content: space-between; align-items: center;">
-                    <h3>Free Plan #1</h3>
+                    <h3>Trial Video Node #1</h3>
                     <span style="color: var(--neon); font-weight: 800;">+₦3,000</span>
                 </div>
-                <p id="statusMsg">Watch the trial video to claim your first reward.</p>
+                <p id="statusMsg">Stream the trial node fully to authorize revenue.</p>
             </div>
-            <button class="btn-action" id="startBtn" onclick="playVideo()">Start Video</button>
-            <button class="btn-action btn-claim" id="claimBtn" onclick="claim()">Claim Reward</button>
+            <button class="btn-action" id="startBtn" onclick="playVideo()">Start Stream</button>
+            <button class="btn-action btn-claim" id="claimBtn" onclick="claimRewardNow()">Claim ₦3,000 Reward</button>
         </div>
 
         <div id="ad1Locked" class="locked-state" onclick="showPop()">
@@ -101,10 +114,10 @@
                 <i class="fas fa-lock" style="font-size: 40px; color: #ffcc00;"></i>
             </div>
             <div class="v-info">
-                <h3>Trial Ad #1 (Used)</h3>
-                <p style="color: #ff4444;">Trial finished. Upgrade to continue earning.</p>
+                <h3>Trial Stream (Completed)</h3>
+                <p style="color: #ff4444;">Access for trial users is limited to 1 node/day.</p>
             </div>
-            <button class="btn-action" style="background: #111; color: #444;">Upgrade to Unlock</button>
+            <button class="btn-action" style="background: #111; color: #444;">Upgrade to Continue</button>
         </div>
     </div>
 
@@ -114,29 +127,35 @@
             <i class="fas fa-lock" style="font-size: 40px; color: #ffcc00;"></i>
         </div>
         <div class="v-info">
-            <h3>Premium Ad #2</h3>
-            <p>Upgrade to unlock this task and earn ₦5,000 extra.</p>
+            <h3>Premium Data Node #2</h3>
+            <p>High-tier rewards are exclusive to upgraded accounts.</p>
         </div>
-        <button class="btn-action" style="background: #111; color: #444;">Unlock Video</button>
+        <button class="btn-action" style="background: #111; color: #444;">Unlock Reward</button>
     </div>
 
     <div id="upgradeModal">
         <div class="modal-box">
-            <i class="fas fa-lock" style="font-size: 45px; color: var(--neon); margin-bottom: 15px;"></i>
-            <h2 style="color: #fff;">Premium Task</h2>
-            <p style="color: #888; font-size: 14px; margin-bottom: 25px;">You have exhausted your free trial or this is a premium task. Upgrade to continue earning daily.</p>
-            <a href="upgrade.html" class="m-link">Upgrade Plan Now</a>
-            <button onclick="closePop()" style="background:transparent; color:#fff; border:1px solid #333; width:100%; padding:12px; border-radius:12px; cursor:pointer;">Go Back</button>
+            <div style="margin-bottom: 20px;">
+                <i class="fas fa-exclamation-triangle" style="font-size: 50px; color: var(--neon);"></i>
+            </div>
+            <h2 style="color: #fff; margin: 0 0 10px 0;">Free Plan Exhausted</h2>
+            <p style="color: #888; font-size: 14px; line-height: 1.5; margin-bottom: 25px;">
+                Your daily trial limit has been reached. Please upgrade to a higher tier plan to continue earning from video nodes.
+            </p>
+            <a href="upgrade.html" class="m-link">Upgrade Now</a>
+            <button class="m-back" onclick="closePop()">Return to Dashboard</button>
         </div>
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script>
-        const supabaseClient = supabase.createClient('https://gbmpenlojubfkvqeyxkh.supabase.co', 'sb_publishable_rYaNpJ5Ngw35pxv4TFmXQw_6-LrYGo-');
+        const SUPABASE_URL = 'https://hwensxsqikohnsxwdxji.supabase.co'; 
+        const SUPABASE_KEY = 'sb_publishable_S3ryEPuq04Bw8yJ3_LzmxA_qyVKpJPf';
+        const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
         async function checkStatus() {
             const { data: { user } } = await supabaseClient.auth.getUser();
-            if(!user) return;
+            if(!user) { window.location.href='index.html'; return; }
 
             let { data: profile } = await supabaseClient.from('profiles').select('v_done').eq('id', user.id).single();
             
@@ -152,7 +171,8 @@
             const bar = document.getElementById('vProgress');
 
             btn.disabled = true;
-            btn.innerText = "Watching... Stay on page";
+            btn.style.opacity = "0.5";
+            btn.innerText = "Processing Data...";
             
             video.muted = false; 
             video.play();
@@ -165,25 +185,37 @@
             video.onended = () => {
                 document.getElementById('startBtn').style.display = "none";
                 document.getElementById('claimBtn').style.display = "block";
-                document.getElementById('statusMsg').innerText = "Trial finished! Claim your profit.";
+                document.getElementById('statusMsg').innerText = "Authorization Ready.";
+                document.getElementById('statusMsg').style.color = "var(--neon)";
             };
         }
 
-        async function claim() {
+        async function claimRewardNow() {
+            const claimBtn = document.getElementById('claimBtn');
+            claimBtn.innerText = "Syncing...";
+            claimBtn.disabled = true;
+
             const { data: { user } } = await supabaseClient.auth.getUser();
             
-            // Get current balance
+            // SMART FETCH: Fetches the absolute latest balance from DB
             let { data: profile } = await supabaseClient.from('profiles').select('balance').eq('id', user.id).single();
-            let newBalance = (profile.balance || 0) + 3000;
+            
+            const currentBalance = Number(profile.balance) || 0;
+            const rewardAmount = 3000;
+            const newTotal = currentBalance + rewardAmount;
 
-            // Update Database
+            // Updates both the balance AND marks the task as done
             const { error } = await supabaseClient
                 .from('profiles')
-                .update({ balance: newBalance, v_done: true })
+                .update({ balance: newTotal, v_done: true })
                 .eq('id', user.id);
 
             if (!error) {
                 window.location.href = 'reward.html';
+            } else {
+                alert("Authorization failed. Try again.");
+                claimBtn.innerText = "Claim ₦3,000 Reward";
+                claimBtn.disabled = false;
             }
         }
 
