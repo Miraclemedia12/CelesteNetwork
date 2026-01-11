@@ -3,129 +3,113 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Customer Support | CELESTE</title>
+    <title>Support Protocol | Celeste</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.tailwindcss.com"></script>
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;800&display=swap');
-
-        body { 
-            font-family: 'Plus Jakarta Sans', sans-serif; 
-            background: radial-gradient(circle at top right, #003311 0%, #001a09 40%, #000000 100%);
-            display: flex; 
-            justify-content: center; 
-            align-items: center; 
-            height: 100vh; 
-            margin: 0; 
-            color: white;
-            overflow: hidden;
-        }
-
-        .auth-container { 
-            background: rgba(0, 0, 0, 0.6); 
-            padding: 40px 30px; 
-            border-radius: 24px; 
-            box-shadow: 0 20px 50px rgba(0, 255, 85, 0.1); 
-            width: 100%; 
-            max-width: 400px; 
-            text-align: center; 
-            border: 1px solid rgba(0, 255, 85, 0.15);
-            backdrop-filter: blur(15px);
-        }
-
-        h2 { 
-            color: #00ff55; 
-            font-size: 32px; 
-            font-weight: 800; 
-            margin-bottom: 8px; 
-            letter-spacing: -1px;
-            text-transform: uppercase;
-        }
-
-        p { color: #88aa99; margin-bottom: 35px; font-size: 15px; font-weight: 500; }
+        :root { --neon: #00ff55; --bg: #000000; --card: #0d0d0d; }
+        body { background: var(--bg); color: #fff; font-family: 'Inter', sans-serif; -webkit-tap-highlight-color: transparent; }
         
-        .support-card {
-            background: rgba(0, 40, 20, 0.4);
-            border: 1px solid rgba(0, 255, 85, 0.1);
-            border-radius: 18px;
-            padding: 20px;
-            margin-bottom: 15px;
-            display: flex;
-            align-items: center;
-            gap: 15px;
-            text-decoration: none;
-            color: white;
+        .support-card { 
+            background: #080808; 
+            border: 1px solid rgba(255, 255, 255, 0.05); 
+            border-radius: 24px;
+            padding: 24px;
             transition: all 0.3s ease;
-            text-align: left;
         }
 
-        .support-card:hover {
-            background: rgba(0, 60, 30, 0.6);
-            border-color: #00ff55;
-            transform: translateX(5px);
+        .support-card:active {
+            transform: scale(0.98);
+            background: #111;
+            border-color: var(--neon);
         }
 
-        .icon-box {
-            width: 45px;
-            height: 45px;
+        .icon-circle {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
             background: rgba(0, 255, 85, 0.1);
-            border-radius: 12px;
             display: flex;
             align-items: center;
             justify-content: center;
-            color: #00ff55;
+            margin-bottom: 15px;
+            color: var(--neon);
             font-size: 20px;
         }
 
-        .card-text b { display: block; font-size: 14px; text-transform: uppercase; letter-spacing: 1px; color: #00ff55; }
-        .card-text span { font-size: 12px; color: #88aa99; }
-
-        .back-btn {
-            margin-top: 25px;
-            display: inline-block;
-            color: #668877;
-            font-size: 13px;
-            text-decoration: none;
-            font-weight: bold;
+        .status-badge {
+            background: rgba(0, 255, 85, 0.1);
+            color: var(--neon);
+            font-size: 8px;
+            padding: 2px 8px;
+            border-radius: 10px;
             text-transform: uppercase;
+            font-weight: 900;
             letter-spacing: 1px;
         }
-
-        .back-btn:hover { color: #00ff55; }
     </style>
 </head>
-<body>
+<body class="min-h-screen p-6 flex flex-col items-center">
 
-    <div class="auth-container">
-        <h2>SUPPORT</h2>
-        <p>Connect with the Celeste Elite Admin.</p>
+    <div class="w-full max-w-md flex items-center justify-between mb-10 mt-4">
+        <a href="reward.html" class="w-10 h-10 rounded-full bg-white/5 flex items-center justify-center text-white border border-white/10 active:scale-90 transition-all">
+            <i class="fas fa-chevron-left"></i>
+        </a>
+        <h1 class="text-xs font-black uppercase tracking-[0.4em] text-gray-500">Customer Support</h1>
+        <div class="w-10"></div>
+    </div>
+
+    <div class="w-full max-w-md space-y-4">
         
-        <a href="https://wa.me/23409034634500" class="support-card">
-            <div class="icon-box"><i class="fab fa-whatsapp"></i></div>
-            <div class="card-text">
-                <b>Direct Message</b>
-                <span>Chat with Admin Andy</span>
+        <a href="https://t.me/MiracleMedia0" target="_blank" class="support-card flex items-center gap-5 block">
+            <div class="icon-circle mb-0">
+                <i class="fab fa-telegram-plane"></i>
             </div>
+            <div class="flex-1">
+                <div class="flex items-center gap-2 mb-0.5">
+                    <h3 class="text-sm font-black uppercase tracking-tight">Chat with Admin Miracle</h3>
+                    <span class="status-badge">Online</span>
+                </div>
+                <p class="text-[10px] text-gray-500 font-medium">Instant response about the API and protocols</p>
+            </div>
+            <i class="fas fa-chevron-right text-gray-800 text-xs"></i>
         </a>
 
-        <a href="https://t.me/your_channel_link" class="support-card">
-            <div class="icon-box"><i class="fab fa-telegram-plane"></i></div>
-            <div class="card-text">
-                <b>Join Channel</b>
-                <span>Get latest node updates</span>
+        <a href="https://t.me/celesteofficial1" target="_blank" class="support-card flex items-center gap-5 block">
+            <div class="icon-circle mb-0" style="background: rgba(255,255,255,0.05); color: #fff;">
+                <i class="fas fa-bullhorn"></i>
             </div>
+            <div class="flex-1">
+                <h3 class="text-sm font-black uppercase tracking-tight mb-0.5">Join Our Channel</h3>
+                <p class="text-[10px] text-gray-500 font-medium">Official Updates & Announcements</p>
+            </div>
+            <i class="fas fa-chevron-right text-gray-800 text-xs"></i>
         </a>
 
-        <a href="mailto:mirilessokon@gmail.com?subject=Celeste%20Protocol%20Help&body=Full%20Name:%20%0D%0APhone:%20%0D%0AIssue:%20" class="support-card">
-            <div class="icon-box"><i class="fas fa-envelope"></i></div>
-            <div class="card-text">
-                <b>Email Protocol</b>
-                <span>Send technical details</span>
+        <a href="mailto:miraclemediaassistant@gmail.com" class="support-card flex items-center gap-5 block">
+            <div class="icon-circle mb-0" style="background: rgba(59, 130, 246, 0.1); color: #3b82f6;">
+                <i class="far fa-envelope"></i>
             </div>
+            <div class="flex-1">
+                <h3 class="text-sm font-black uppercase tracking-tight mb-0.5">Email Support</h3>
+                <p class="text-[10px] text-gray-500 font-medium">miraclemediaassistant@gmail.com</p>
+            </div>
+            <i class="fas fa-chevron-right text-gray-800 text-xs"></i>
         </a>
-        
-        <a href="reward.html" class="back-btn">Return to Portal</a>
+
+    </div>
+
+    <div class="w-full max-w-md mt-10 p-6 rounded-[32px] bg-white/[0.02] border border-white/5 text-center">
+        <i class="fas fa-shield-halved text-gray-700 text-2xl mb-4"></i>
+        <h4 class="text-[11px] font-black uppercase tracking-[0.2em] text-gray-400 mb-2">Technical Assistance</h4>
+        <p class="text-[10px] text-gray-600 leading-relaxed px-4">
+            Our specialized node engineers are available 24/7 to resolve any connectivity or withdrawal protocols.
+        </p>
+    </div>
+
+    <div class="mt-auto pt-10 pb-6 text-center">
+        <p class="text-[8px] font-black text-gray-800 uppercase tracking-[0.5em]">Celeste Identity Service v4.0</p>
     </div>
 
 </body>
 </html>
-
