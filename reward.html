@@ -83,10 +83,10 @@
         <div class="user-info"><span style="font-size:13px;">Welcome, <b id="userName" style="color:var(--neon);">Investor</b></span><div class="initials" id="userInit">I</div></div>
     </div>
 
-    <div class="balance-box">
+    <div class="balance-box" id="mainBalBox">
         <div class="plan-pill">
             <span>Free Plan</span>
-            <span class="expiry-warn">2 Days Remaining</span>
+            <span class="expiry-warn" id="expiryLabel">2 Days Remaining</span>
         </div>
         <p style="font-size:10px;color:var(--soft-text);letter-spacing:1px;">AVAILABLE BALANCE</p>
         <h1 id="balTxt">₦14,000.00</h1>
@@ -124,27 +124,41 @@
         const SUPABASE_KEY = 'sb_publishable_S3ryEPuq04Bw8yJ3_LzmxA_qyVKpJPf';
         const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
-        let currentBalance = 14000;
         let isNaira = true;
         let profileData = null;
 
         async function loadData() {
             const { data: { user } } = await supabaseClient.auth.getUser();
             if(!user) { window.location.href='index.html'; return; }
-            
-            let { data: profile } = await supabaseClient.from('profiles').select('*').eq('id', user.id).maybeSingle();
-            
-            if(!profile) {
-                const { data: newP } = await supabaseClient.from('profiles').insert([{ id: user.id, balance: 14000 }]).select().single();
-                profile = newP;
+
+            // 1. Email Verification Check
+            if (!user.email_confirmed_at) {
+                document.body.innerHTML = `
+                <div style="height:100vh; display:flex; flex-direction:column; align-items:center; justify-content:center; text-align:center; padding:30px; background:#000; color:#fff;">
+                    <i class="fas fa-envelope-open-text" style="font-size:50px; color:var(--neon); margin-bottom:20px;"></i>
+                    <h2>Email Not Verified</h2>
+                    <p style="color:#888;">Check <b>${user.email}</b> and click the link to claim your ₦14,000 bonus.</p>
+                    <button onclick="location.reload()" style="background:var(--neon); border:none; padding:15px 30px; border-radius:12px; font-weight:900; margin-top:20px;">I'VE VERIFIED</button>
+                    <a href="index.html" style="color:#555; margin-top:20px; text-decoration:none;">Logout</a>
+                </div>`;
+                return;
             }
             
+            // 2. Load Profile
+            let { data: profile } = await supabaseClient.from('profiles').select('*').eq('id', user.id).single();
             profileData = profile;
-            currentBalance = Number(profile.balance);
 
+            // 3. User Initials & Name
             document.getElementById('userName').innerText = user.email.split('@')[0].toUpperCase();
             document.getElementById('userInit').innerText = user.email.charAt(0).toUpperCase();
             
+            // 4. Trial Expiry Check (When all free tasks are done)
+            if (profile.v_done && profile.t1_done && profile.t2_done) {
+                document.getElementById('expiryLabel').innerText = "PLAN EXPIRED";
+                document.getElementById('mainBalBox').style.border = "1px solid var(--danger)";
+            }
+
+            // 5. Update Stats
             document.getElementById('vProg').innerText = (profile.v_done ? "1 / 1" : "0 / 1");
             let tCount = (profile.t1_done ? 1 : 0) + (profile.t2_done ? 1 : 0);
             document.getElementById('tProg').innerText = tCount + " / 2";
@@ -155,46 +169,29 @@
         function updateDisplay() {
             const balEl = document.getElementById('balTxt');
             const labelEl = document.getElementById('curLabel');
+            const container = document.getElementById('txContainer');
 
+            // Balance Display
             if(isNaira) {
-                balEl.innerText = "₦" + currentBalance.toLocaleString(undefined, {minimumFractionDigits: 2});
+                balEl.innerText = "₦" + profileData.balance.toLocaleString();
                 labelEl.innerText = "NAIRA";
             } else {
-                // Fixed conversion: 14000 Naira / 2000 = 7.00 Euro
-                const euroVal = (currentBalance / 2000);
-                balEl.innerText = "€" + euroVal.toLocaleString(undefined, {minimumFractionDigits: 2});
+                balEl.innerText = "€" + (profileData.balance / 2000).toFixed(2);
                 labelEl.innerText = "EURO";
             }
             
-            renderHistory();
-        }
-
-        function toggleCur() {
-            isNaira = !isNaira;
-            updateDisplay();
-        }
-
-        function renderHistory() {
-            const container = document.getElementById('txContainer');
+            // INSTANT History Rendering
             container.innerHTML = "";
-            
-            // Welcome Bonus (Naira: 14,000 | Euro: 7.00)
-            addTx(container, "Registration Bonus", "Welcome bonus from Celeste", 14000, "fa-gift");
-            
-            if(profileData && profileData.v_done) addTx(container, "Video Reward", "Ad watch revenue", 3000, "fa-play-circle");
-            if(profileData && profileData.t1_done) addTx(container, "Telegram Task 1", "Community engagement", 2000, "fa-paper-plane");
-            if(profileData && profileData.t2_done) addTx(container, "Telegram Task 2", "Channel subscription", 2000, "fa-check-double");
+            addTx(container, "Registration Bonus", "Welcome bonus gift", 14000, "fa-gift");
+            if(profileData.v_done) addTx(container, "Video Reward", "Ad watch revenue", 3000, "fa-play-circle");
+            if(profileData.t1_done) addTx(container, "Telegram Task 1", "Joined Official Channel", 2000, "fa-paper-plane");
+            if(profileData.t2_done) addTx(container, "Telegram Task 2", "Joined Community Hub", 2000, "fa-check-double");
         }
 
         function addTx(container, title, desc, amt, icon) {
+            const displayVal = isNaira ? "₦" + amt.toLocaleString() : "€" + (amt / 2000).toFixed(2);
             const card = document.createElement('div');
             card.className = "tx-card";
-            
-            // Format currency inside history too
-            const displayVal = isNaira 
-                ? "₦" + amt.toLocaleString() 
-                : "€" + (amt / 2000).toLocaleString(undefined, {minimumFractionDigits: 2});
-            
             card.innerHTML = `
                 <div style="display:flex;align-items:center;gap:12px;">
                     <div class="tx-icon"><i class="fas ${icon}"></i></div>
@@ -202,9 +199,10 @@
                 </div>
                 <div style="color:var(--neon);font-size:13px;font-weight:800;">+${displayVal}</div>
             `;
-            container.appendChild(card); // Use appendChild to show oldest first or prepend for newest
+            container.appendChild(card);
         }
 
+        function toggleCur() { isNaira = !isNaira; updateDisplay(); }
         function showPop() { document.getElementById('upgradeModal').style.display = 'flex'; }
         function closeModal() { document.getElementById('upgradeModal').style.display = 'none'; }
         function openSidebar() { document.getElementById('sidebar').classList.add('active'); document.getElementById('overlay').classList.add('active'); }
@@ -214,4 +212,3 @@
     </script>
 </body>
 </html>
-
