@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Withdrawal | Celeste Network</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        :root { --neon: #00ff55; --bg: #000000; --card: #0d0d0d; }
+        body { background: var(--bg); color: #fff; font-family: 'Inter', sans-serif; -webkit-tap-highlight-color: transparent; }
+        .neon-text { color: var(--neon); text-shadow: 0 0 10px rgba(0, 255, 85, 0.3); }
+        .glass-card { background: rgba(13, 13, 13, 0.9); border: 1px solid rgba(255, 255, 255, 0.08); backdrop-filter: blur(10px); }
+        
+        .progress-container { background: rgba(255,255,255,0.05); border-radius: 10px; height: 8px; overflow: hidden; }
+        .progress-fill { background: var(--neon); height: 100%; transition: width 1.5s cubic-bezier(0.4, 0, 0.2, 1); box-shadow: 0 0 15px var(--neon); }
+
+        #upgradeModal { 
+            display: none; 
+            position: fixed; 
+            inset: 0; 
+            background: rgba(0,0,0,0.95); 
+            z-index: 100; 
+            align-items: center; 
+            justify-content: center; 
+            padding: 20px;
+            backdrop-filter: blur(8px);
+        }
+    </style>
+</head>
+<body class="min-h-screen p-6 flex flex-col items-center">
+
+    <div class="w-full max-w-md flex items-center justify-between mb-8">
+        <a href="reward.html" class="w-10 h-10 rounded-full bg-white/5 flex items-center justify-center text-white active:scale-90 transition-transform">
+            <i class="fas fa-chevron-left"></i>
+        </a>
+        <span class="text-[11px] font-black uppercase tracking-[0.4em] text-gray-400">Withdraw Your Earnings</span>
+        <div class="w-10"></div>
+    </div>
+
+    <div class="w-full max-w-md glass-card rounded-[40px] p-8 mb-6 relative overflow-hidden border-white/10">
+        <div class="relative z-10">
+            <div class="flex justify-between items-start mb-4">
+                <span class="text-[10px] font-bold text-gray-500 uppercase tracking-widest">Available Payout Balance</span>
+                </div>
+            <h2 id="balance-display" class="text-5xl font-black tracking-tighter mb-8 italic">₦0.00</h2>
+            
+            <div class="space-y-4">
+                <div class="flex justify-between text-[10px] font-black uppercase tracking-[0.1em]">
+                    <span class="text-gray-500">Min. Withdrawal: ₦25,000</span>
+                    <span id="percent-text" class="text-[#00ff55]">0%</span>
+                </div>
+                <div class="progress-container">
+                    <div id="progress-bar" class="progress-fill" style="width: 0%"></div>
+                </div>
+            </div>
+        </div>
+        <div class="absolute -right-20 -bottom-20 w-40 h-40 bg-[#00ff55]/10 blur-[80px] rounded-full"></div>
+    </div>
+
+    <div class="w-full max-w-md p-6 bg-[#00ff55]/5 border border-[#00ff55]/10 rounded-[28px] mb-10">
+        <div class="flex gap-4 items-start">
+            <div class="mt-1">
+                <i class="fas fa-shield-check text-[#00ff55]"></i>
+            </div>
+            <p class="text-[13px] text-gray-400 leading-relaxed">
+                <span class="text-white font-bold">Celeste Network</span> requires a minimum liquidity balance of <span class="text-white font-bold">₦25,000.00</span> to authorize a secure external bank transfer. Complete more tasks to bridge the remaining gap.
+            </p>
+        </div>
+    </div>
+
+    <div class="w-full max-w-md">
+        <button onclick="openModal()" class="w-full bg-[#00ff55] hover:bg-[#05ff5a] text-black py-5 rounded-[20px] font-black uppercase text-xs tracking-[0.2em] flex items-center justify-center gap-3 transition-all active:scale-95 shadow-[0_10px_30px_rgba(0,255,85,0.2)]">
+            Withdraw Funds 
+            <i class="fas fa-university"></i>
+        </button>
+        <p class="text-center text-[9px] text-gray-600 mt-6 font-bold uppercase tracking-[0.3em]">Encrypted Payout Protocol</p>
+    </div>
+
+    <div id="upgradeModal">
+        <div class="w-full max-w-sm glass-card rounded-[44px] p-10 text-center relative border-white/10 shadow-2xl">
+            <div class="absolute -top-10 left-1/2 -translate-x-1/2 w-20 h-20 bg-black border-4 border-[#00ff55] rounded-full flex items-center justify-center shadow-[0_0_20px_rgba(0,255,85,0.4)]">
+                <i class="fas fa-crown text-3xl text-[#00ff55]"></i>
+            </div>
+            
+            <div class="mt-8">
+                <h3 class="text-2xl font-black mb-3 uppercase tracking-tight italic">Tier Upgrade Required</h3>
+                <p class="text-gray-400 text-sm mb-10 leading-relaxed">
+                    Withdrawals are currently locked for <span class="text-white font-bold">Standard Tier</span> users. Upgrade to Premium to unlock instant bank transfers and higher earning limits.
+                </p>
+                
+                <a href="upgrade.html" class="block w-full bg-white text-black py-5 rounded-2xl font-black uppercase text-xs tracking-widest shadow-xl active:scale-95 transition-transform mb-4">
+                    Upgrade to Premium
+                </a>
+                
+                <button onclick="closeModal()" class="text-gray-500 text-[10px] font-black uppercase tracking-widest hover:text-white transition-colors">
+                    Return to Dashboard
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script>
+        const SUPABASE_URL = 'https://hwensxsqikohnsxwdxji.supabase.co'; 
+        const SUPABASE_KEY = 'sb_publishable_S3ryEPuq04Bw8yJ3_LzmxA_qyVKpJPf';
+        const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+        async function init() {
+            const { data: { user } } = await supabase.auth.getUser();
+            if(!user) { window.location.href = 'index.html'; return; }
+
+            const { data, error } = await supabase
+                .from('profiles')
+                .select('balance')
+                .eq('id', user.id)
+                .single();
+
+            if(error) return;
+
+            const currentBalance = Number(data.balance) || 0;
+            const target = 25000;
+            
+            // Format number with commas
+            const formattedBalance = currentBalance.toLocaleString();
+            document.getElementById('balance-display').innerText = `₦${formattedBalance}.00`;
+            
+            // Progress Logic
+            let percentage = (currentBalance / target) * 100;
+            if(percentage > 100) percentage = 100;
+            
+            setTimeout(() => {
+                document.getElementById('progress-bar').style.width = percentage + '%';
+                document.getElementById('percent-text').innerText = `${Math.floor(percentage)}% COMPLETE`;
+            }, 500);
+        }
+
+        function openModal() {
+            document.getElementById('upgradeModal').style.display = 'flex';
+        }
+
+        function closeModal() {
+            document.getElementById('upgradeModal').style.display = 'none';
+        }
+
+        window.onload = init;
+    </script>
+</body>
+</html>
+
