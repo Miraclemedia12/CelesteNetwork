@@ -9,7 +9,6 @@
     <style>
         :root { --neon: #00ff55; --bg: #000000; --card: #0d0d0d; }
         body { background: var(--bg); color: #fff; font-family: 'Inter', sans-serif; -webkit-tap-highlight-color: transparent; }
-        .neon-text { color: var(--neon); text-shadow: 0 0 10px rgba(0, 255, 85, 0.3); }
         .glass-card { background: rgba(13, 13, 13, 0.9); border: 1px solid rgba(255, 255, 255, 0.08); backdrop-filter: blur(10px); }
         
         .progress-container { background: rgba(255,255,255,0.05); border-radius: 10px; height: 8px; overflow: hidden; }
@@ -42,13 +41,13 @@
         <div class="relative z-10">
             <div class="flex justify-between items-start mb-4">
                 <span class="text-[10px] font-bold text-gray-500 uppercase tracking-widest">Available Payout Balance</span>
-                </div>
+            </div>
             <h2 id="balance-display" class="text-5xl font-black tracking-tighter mb-8 italic">₦0.00</h2>
             
             <div class="space-y-4">
                 <div class="flex justify-between text-[10px] font-black uppercase tracking-[0.1em]">
                     <span class="text-gray-500">Min. Withdrawal: ₦25,000</span>
-                    <span id="percent-text" class="text-[#00ff55]">0%</span>
+                    <span id="percent-text" class="text-[#00ff55]">0% COMPLETE</span>
                 </div>
                 <div class="progress-container">
                     <div id="progress-bar" class="progress-fill" style="width: 0%"></div>
@@ -64,15 +63,15 @@
                 <i class="fas fa-shield-check text-[#00ff55]"></i>
             </div>
             <p class="text-[13px] text-gray-400 leading-relaxed">
-                <span class="text-white font-bold">Celeste Network</span> requires a minimum liquidity balance of <span class="text-white font-bold">₦25,000.00</span> to authorize a secure external bank transfer. Complete more tasks to bridge the remaining gap.
+                <span class="text-white font-bold">Celeste Network</span> requires a minimum liquidity balance of <span class="text-white font-bold">₦25,000.00</span> to authorize a secure external bank transfer.
             </p>
         </div>
     </div>
 
     <div class="w-full max-w-md">
         <button onclick="openModal()" class="w-full bg-[#00ff55] hover:bg-[#05ff5a] text-black py-5 rounded-[20px] font-black uppercase text-xs tracking-[0.2em] flex items-center justify-center gap-3 transition-all active:scale-95 shadow-[0_10px_30px_rgba(0,255,85,0.2)]">
-            Withdraw Funds 
-            <i class="fas fa-university"></i>
+            <span>Start Earning</span>
+            <i class="fas fa-arrow-right"></i>
         </button>
         <p class="text-center text-[9px] text-gray-600 mt-6 font-bold uppercase tracking-[0.3em]">Encrypted Payout Protocol</p>
     </div>
@@ -82,19 +81,16 @@
             <div class="absolute -top-10 left-1/2 -translate-x-1/2 w-20 h-20 bg-black border-4 border-[#00ff55] rounded-full flex items-center justify-center shadow-[0_0_20px_rgba(0,255,85,0.4)]">
                 <i class="fas fa-crown text-3xl text-[#00ff55]"></i>
             </div>
-            
             <div class="mt-8">
-                <h3 class="text-2xl font-black mb-3 uppercase tracking-tight italic">Tier Upgrade Required</h3>
+                <h3 class="text-2xl font-black mb-3 uppercase tracking-tight italic">Free Plan Limit</h3>
                 <p class="text-gray-400 text-sm mb-10 leading-relaxed">
-                    Withdrawals are currently locked for <span class="text-white font-bold">Standard Tier</span> users. Upgrade to Premium to unlock instant bank transfers and higher earning limits.
+                    You are currently on the <span class="text-white font-bold">Free Trial Plan</span>. To increase your node capacity and earn higher rewards to reach the withdrawal threshold, please upgrade your account.
                 </p>
-                
                 <a href="upgrade.html" class="block w-full bg-white text-black py-5 rounded-2xl font-black uppercase text-xs tracking-widest shadow-xl active:scale-95 transition-transform mb-4">
-                    Upgrade to Premium
+                    Upgrade Now
                 </a>
-                
                 <button onclick="closeModal()" class="text-gray-500 text-[10px] font-black uppercase tracking-widest hover:text-white transition-colors">
-                    Return to Dashboard
+                    Later
                 </button>
             </div>
         </div>
@@ -121,11 +117,10 @@
             const currentBalance = Number(data.balance) || 0;
             const target = 25000;
             
-            // Format number with commas
-            const formattedBalance = currentBalance.toLocaleString();
-            document.getElementById('balance-display').innerText = `₦${formattedBalance}.00`;
+            // Sync with Dashboard balance
+            document.getElementById('balance-display').innerText = `₦${currentBalance.toLocaleString()}.00`;
             
-            // Progress Logic
+            // Progress Bar Calculation
             let percentage = (currentBalance / target) * 100;
             if(percentage > 100) percentage = 100;
             
@@ -147,4 +142,3 @@
     </script>
 </body>
 </html>
-
