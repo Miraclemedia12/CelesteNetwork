@@ -32,14 +32,14 @@
         .btn-join { background: var(--tg-blue); color: #fff; }
         .btn-claim { background: #ffffff; color: #000; }
         
-        /* THE FIX: Hard Locked Class */
+        /* THIS FORCES THE BUTTON TO STAY DARK AND UNCLICKABLE */
         .btn-locked { 
-            background: #1a1a1a !important; 
-            color: #444 !important; 
-            border: 1px solid #222 !important; 
+            background: #222 !important; 
+            color: #555 !important; 
             cursor: not-allowed !important; 
-            pointer-events: none !important; /* Makes button unclickable */
-            opacity: 0.6; 
+            pointer-events: none !important; 
+            opacity: 0.7 !important;
+            box-shadow: none !important;
         }
         
         .verify-box { color: var(--tg-blue); font-size: 12px; font-weight: 700; margin-top: 12px; text-align: center; display: block; letter-spacing: 1px; }
@@ -90,7 +90,7 @@
             <a href="https://t.me/Animehub004" target="_blank" id="btn2" class="btn btn-join" onclick="showClaim(2)">Join Sector</a>
             <div id="verify2" class="verify-box hidden"><i class="fas fa-spinner fa-spin"></i> SYNCING DATA...</div>
             <button id="claim2" class="btn btn-claim hidden" onclick="processReward(2)">Claim Reward</button>
-            <span id="note2" class="status-note">UNLOCKS TOMORROW</span>
+            <span id="note2" class="status-note">LOCKED</span>
         </div>
     </div>
 
@@ -118,7 +118,7 @@
             const { data } = await supabaseClient.from('profiles').select('*').eq('id', user.id).single();
             userProfile = data;
 
-            // 1. Check if everything is done
+            // 1. Both Finished
             if(userProfile.t1_done && userProfile.t2_done) {
                 document.getElementById('upgradeModal').style.display = 'flex';
                 lockButton(1, "VERIFIED ✅");
@@ -126,38 +126,45 @@
                 return;
             }
 
-            // 2. Lock/Unlock Task 1
+            // 2. Task 1 Logic
             if(userProfile.t1_done) {
                 lockButton(1, "VERIFIED ✅");
                 
-                // 3. Strict Check for Task 2
-                const lastClaim = localStorage.getItem('t1_claim_date');
+                // 3. Task 2 Tomorrow Check
+                const savedDate = localStorage.getItem('celeste_task1_date');
                 const today = new Date().toDateString();
                 
-                if (lastClaim === today) {
-                    // This creates the dead, unclickable state shown in your screenshot
-                    lockButton(2, "JOIN SECTOR"); 
-                    document.getElementById('note2').innerText = "UNLOCKS TOMORROW";
+                if (savedDate === today) {
+                    lockButton(2, "AVAILABLE TOMORROW");
+                    document.getElementById('note2').innerText = "SYSTEM COOLDOWN";
                 } else {
                     document.getElementById('note2').innerText = "TASK ACTIVE";
+                    // Reset to active state if it's a new day
+                    const b2 = document.getElementById('btn2');
+                    b2.classList.remove('btn-locked');
+                    b2.style.pointerEvents = "auto";
                 }
             } else {
-                // Task 1 not done yet, Task 2 stays locked
-                lockButton(2, "LOCKED 🔒");
+                lockButton(2, "LOCKED");
+                document.getElementById('note2').innerText = "FINISH TASK 1 FIRST";
             }
         }
 
         function lockButton(num, text) {
             const btn = document.getElementById(`btn${num}`);
             btn.innerText = text;
-            btn.className = "btn btn-locked"; // Applies the dead styles
-            btn.removeAttribute('href');      // Removes the link
-            btn.style.pointerEvents = "none"; // Disables all clicking
-            btn.onclick = (e) => e.preventDefault();
+            btn.className = "btn btn-locked"; // Overwrites btn-join completely
+            btn.removeAttribute('href'); 
+            btn.style.pointerEvents = "none";
+            btn.style.background = "#222"; // Forced inline style
+            btn.style.color = "#555";    // Forced inline style
         }
 
         function showClaim(num) {
-            document.getElementById(`btn${num}`).classList.add('hidden');
+            const btn = document.getElementById(`btn${num}`);
+            if(btn.classList.contains('btn-locked')) return;
+            
+            btn.classList.add('hidden');
             document.getElementById(`verify${num}`).classList.remove('hidden');
             setTimeout(() => {
                 document.getElementById(`verify${num}`).classList.add('hidden');
@@ -168,19 +175,22 @@
         async function processReward(num) {
             const claimBtn = document.getElementById(`claim${num}`);
             claimBtn.disabled = true;
+            claimBtn.innerText = "PROCESSING...";
 
+            // Fresh balance pull to prevent old data issues
             const { data: profile } = await supabaseClient.from('profiles').select('balance').eq('id', userProfile.id).single();
-            const newBalance = (Number(profile.balance) || 0) + 2000;
+            const currentBalance = Number(profile.balance) || 0;
+            const newBalance = currentBalance + 2000;
 
             let updateObj = { balance: newBalance };
             if(num === 1) {
                 updateObj.t1_done = true;
-                localStorage.setItem('t1_claim_date', new Date().toDateString());
+                localStorage.setItem('celeste_task1_date', new Date().toDateString());
             }
             if(num === 2) updateObj.t2_done = true;
 
             await supabaseClient.from('profiles').update(updateObj).eq('id', userProfile.id);
-            window.location.reload(); // Refresh to trigger the locks
+            window.location.reload(); 
         }
 
         window.onload = init;
