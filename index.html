@@ -23,7 +23,7 @@
         h2 { color: #00ff55; font-size: 38px; font-weight: 800; margin-bottom: 8px; letter-spacing: -1px; text-transform: uppercase; }
         p { color: #88aa99; margin-bottom: 35px; font-size: 15px; font-weight: 500; }
         
-        .input-group { margin-bottom: 20px; text-align: left; position: relative; } /* Added position relative */
+        .input-group { margin-bottom: 20px; text-align: left; position: relative; }
         label { display: block; margin-bottom: 8px; font-size: 12px; color: #00ff55; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; }
         
         input { 
@@ -33,7 +33,6 @@
 
         input:focus { background: rgba(0, 60, 30, 0.6); border-color: #00ff55; box-shadow: 0 0 15px rgba(0, 255, 85, 0.2); }
         
-        /* Eye Icon Styling */
         .toggle-password {
             position: absolute;
             right: 15px;
@@ -98,7 +97,6 @@
         const SUPABASE_KEY = 'sb_publishable_S3ryEPuq04Bw8yJ3_LzmxA_qyVKpJPf';
         const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
-        // Function to toggle password visibility
         function togglePasswordVisibility() {
             const passwordInput = document.getElementById('password');
             const eyeIcon = document.getElementById('toggleEye');
@@ -131,23 +129,32 @@
             }
         }
 
+        // Updated function to handle redirect for OTP code method
         async function forgotPassword() {
             const email = document.getElementById('email').value;
             const messageDiv = document.getElementById('message');
+            
             if (!email) {
                 messageDiv.style.color = "#ff4444";
                 messageDiv.innerText = "Enter email first.";
                 return;
             }
-            const { error } = await supabaseClient.auth.resetPasswordForEmail(email, {
-                redirectTo: 'https://miraclemedia12.github.io/CelesteNetwork/reset-password.html',
-            });
+
+            // Sends the 6-digit code to the user's email address
+            const { error } = await supabaseClient.auth.resetPasswordForEmail(email);
+
             if (error) {
                 messageDiv.style.color = "#ff4444";
                 messageDiv.innerText = error.message;
             } else {
+                // Notifies the user and redirects to the reset page
                 messageDiv.style.color = "#00ff55";
-                messageDiv.innerText = "Reset link sent!";
+                messageDiv.innerText = "Code Sent! Redirecting...";
+                
+                // Jump to reset-password.html and pass the email in the URL
+                setTimeout(() => { 
+                    window.location.href = `reset-password.html?email=${encodeURIComponent(email)}`; 
+                }, 1500);
             }
         }
     </script>
