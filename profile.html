@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Profile Settings | Celeste Network</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        :root { --neon: #00ff55; --bg: #000000; --card: #111111; --input: #121212; }
+        body { background: var(--bg); color: #fff; font-family: 'Inter', sans-serif; -webkit-tap-highlight-color: transparent; }
+        
+        .glass-container { 
+            background: #080808; 
+            border-radius: 40px; 
+            border: 1px solid rgba(255,255,255,0.05); 
+            padding: 30px 20px; 
+            box-shadow: 0 20px 50px rgba(0,0,0,0.8);
+        }
+
+        .input-group { margin-bottom: 20px; }
+        .input-group label { 
+            display: block; 
+            font-size: 10px; 
+            font-weight: 900; 
+            text-transform: uppercase; 
+            color: #444; 
+            margin-bottom: 8px; 
+            margin-left: 12px; 
+            letter-spacing: 2px; 
+        }
+
+        .input-field { 
+            width: 100%; 
+            background: var(--input); 
+            border: 1px solid #1a1a1a; 
+            border-radius: 18px; 
+            padding: 16px; 
+            color: #fff; 
+            font-size: 14px; 
+            outline: none; 
+            transition: 0.3s; 
+        }
+
+        .input-field:focus { 
+            border-color: var(--neon); 
+            background: #161616;
+            box-shadow: 0 0 15px rgba(0,255,85,0.05); 
+        }
+
+        .section-title { 
+            font-size: 14px; 
+            font-weight: 900; 
+            margin: 35px 0 20px 10px; 
+            color: var(--neon); 
+            letter-spacing: 3px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .avatar-circle { 
+            width: 100px; 
+            height: 100px; 
+            border: 2px solid var(--neon); 
+            border-radius: 50%; 
+            margin: 0 auto 15px; 
+            display: flex; 
+            align-items: center; 
+            justify-content: center; 
+            background: radial-gradient(circle, #111 0%, #000 100%); 
+            position: relative;
+            box-shadow: 0 0 20px rgba(0, 255, 85, 0.1);
+        }
+
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar { width: 4px; }
+        ::-webkit-scrollbar-track { background: #000; }
+        ::-webkit-scrollbar-thumb { background: #222; border-radius: 10px; }
+    </style>
+</head>
+<body class="min-h-screen p-4 flex flex-col items-center pb-12">
+
+    <div class="w-full max-w-md">
+        <!-- Header -->
+        <div class="flex items-center justify-between mb-8 mt-4 px-2">
+            <a href="reward.html" class="w-10 h-10 rounded-full bg-white/5 flex items-center justify-center text-white border border-white/10 active:scale-90 transition-all">
+                <i class="fas fa-chevron-left"></i>
+            </a>
+            <h1 class="text-xs font-black uppercase tracking-[0.5em] text-gray-400">Node Identity</h1>
+            <div class="w-10"></div>
+        </div>
+
+        <div class="glass-container">
+            <!-- Profile Photo Section -->
+            <div class="text-center mb-10">
+                <div class="avatar-circle">
+                    <i class="fas fa-user-shield text-4xl text-neon opacity-80"></i>
+                </div>
+                <h2 id="display-username" class="text-lg font-black italic tracking-tighter mb-1">...</h2>
+                <p class="text-[9px] font-bold text-gray-500 uppercase tracking-widest">Authorized User</p>
+            </div>
+
+            <!-- Personal Data -->
+            <div class="input-group">
+                <label>Full Name</label>
+                <input type="text" id="fullName" class="input-field" placeholder="Legal Name">
+            </div>
+
+            <div class="input-group">
+                <label>Email Protocol</label>
+                <input type="email" id="email" class="input-field" readonly style="color: #444; border-style: dashed;">
+            </div>
+
+            <div class="input-group">
+                <label>Phone Line</label>
+                <input type="tel" id="phone" class="input-field" placeholder="+234...">
+            </div>
+
+            <div class="input-group">
+                <label>Display Username</label>
+                <input type="text" id="username" class="input-field" placeholder="@username">
+            </div>
+
+            <!-- Withdrawal Section -->
+            <h2 class="section-title italic uppercase">
+                <i class="fas fa-university text-[10px]"></i> Financial Gateway
+            </h2>
+
+            <div class="input-group">
+                <label>Bank Institution</label>
+                <select id="bankName" class="input-field">
+                    <option value="" disabled selected>Select Bank</option>
+                    <option value="opay">OPay</option>
+                    <option value="palmpay">PalmPay</option>
+                    <option value="moniepoint">Moniepoint MFB</option>
+                    <option value="kuda">Kuda Microfinance Bank</option>
+                    <option value="gtb">Guaranty Trust Bank (GTBank)</option>
+                    <option value="zenith">Zenith Bank</option>
+                    <option value="access">Access Bank</option>
+                    <option value="firstbank">First Bank of Nigeria</option>
+                    <option value="uba">United Bank for Africa (UBA)</option>
+                    <option value="fcmb">FCMB</option>
+                    <option value="fidelity">Fidelity Bank</option>
+                    <option value="stanbic">Stanbic IBTC Bank</option>
+                    <option value="wema">Wema Bank (ALAT)</option>
+                    <option value="sterling">Sterling Bank</option>
+                    <option value="union">Union Bank</option>
+                </select>
+            </div>
+
+            <div class="input-group">
+                <label>Account Number</label>
+                <input type="number" id="accountNumber" class="input-field" placeholder="10 Digits">
+            </div>
+
+            <div class="input-group">
+                <label>Holder Name</label>
+                <input type="text" id="holderName" class="input-field" placeholder="Full Bank Name">
+            </div>
+
+            <!-- Action Buttons -->
+            <div class="pt-6 space-y-4">
+                <button onclick="saveProfile()" id="saveBtn" class="w-full bg-[#00ff55] text-black font-black py-5 rounded-2xl uppercase tracking-[0.2em] text-[11px] shadow-[0_10px_20px_rgba(0,255,85,0.15)] active:scale-95 transition-all">
+                    Sync Changes
+                </button>
+
+                <button onclick="logout()" class="w-full bg-red-500/5 text-red-500 font-black py-5 rounded-2xl uppercase tracking-[0.2em] text-[11px] border border-red-500/10 active:scale-95 transition-all">
+                    Disconnect Node
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripting -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script>
+        const SUPABASE_URL = 'https://hwensxsqikohnsxwdxji.supabase.co'; 
+        const SUPABASE_KEY = 'sb_publishable_S3ryEPuq04Bw8yJ3_LzmxA_qyVKpJPf';
+        const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+        async function loadProfile() {
+            const { data: { user } } = await supabaseClient.auth.getUser();
+            if(!user) { window.location.href = 'index.html'; return; }
+
+            document.getElementById('email').value = user.email;
+
+            const { data, error } = await supabaseClient
+                .from('profiles')
+                .select('*')
+                .eq('id', user.id)
+                .single();
+
+            if(data) {
+                document.getElementById('fullName').value = data.full_name || '';
+                document.getElementById('phone').value = data.phone || '';
+                document.getElementById('username').value = data.username || '';
+                document.getElementById('bankName').value = data.bank_name || '';
+                document.getElementById('accountNumber').value = data.account_number || '';
+                document.getElementById('holderName').value = data.holder_name || '';
+                document.getElementById('display-username').innerText = data.username || user.email.split('@')[0];
+            }
+        }
+
+        async function saveProfile() {
+            const btn = document.getElementById('saveBtn');
+            const originalText = btn.innerText;
+            btn.disabled = true;
+            btn.innerText = "SYNCHRONIZING...";
+            
+            const { data: { user } } = await supabaseClient.auth.getUser();
+            
+            const updates = {
+                id: user.id,
+                full_name: document.getElementById('fullName').value,
+                phone: document.getElementById('phone').value,
+                username: document.getElementById('username').value,
+                bank_name: document.getElementById('bankName').value,
+                account_number: document.getElementById('accountNumber').value,
+                holder_name: document.getElementById('holderName').value,
+                updated_at: new Date()
+            };
+
+            const { error } = await supabaseClient.from('profiles').upsert(updates);
+            
+            if(error) {
+                alert("Protocol Error: " + error.message);
+            } else {
+                // Success feedback
+                btn.style.backgroundColor = "#fff";
+                btn.innerText = "SUCCESS";
+                setTimeout(() => {
+                    btn.style.backgroundColor = "#00ff55";
+                    btn.innerText = originalText;
+                    btn.disabled = false;
+                    loadProfile(); // Refresh display name
+                }, 2000);
+            }
+        }
+
+        async function logout() {
+            if(confirm("Terminate session?")) {
+                await supabaseClient.auth.signOut();
+                window.location.href = 'index.html';
+            }
+        }
+
+        window.onload = loadProfile;
+    </script>
+</body>
+</html>
+
+
