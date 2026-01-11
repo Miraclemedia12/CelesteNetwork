@@ -10,8 +10,13 @@
         * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
         body { background: var(--bg); color: #fff; font-family: 'Inter', sans-serif; margin: 0; padding: 20px; padding-bottom: 50px; overflow-x: hidden; }
         
-        .header { display: flex; align-items: center; gap: 15px; margin-bottom: 30px; }
+        .header { display: flex; align-items: center; gap: 15px; margin-bottom: 20px; }
         .back-btn { color: #fff; font-size: 20px; text-decoration: none; opacity: 0.8; }
+
+        /* Headline Section */
+        .headline-section { text-align: left; margin-bottom: 30px; padding-left: 5px; }
+        .headline-section h1 { color: var(--neon); font-size: 28px; font-weight: 900; margin: 0; letter-spacing: 1px; }
+        .headline-section p { color: #888; font-size: 13px; margin-top: 5px; line-height: 1.4; max-width: 90%; }
 
         .video-container { 
             background: var(--card); border: 1px solid #222; 
@@ -36,6 +41,8 @@
         .v-info { margin-top: 15px; }
         .v-info h3 { margin: 0; font-size: 16px; color: #fff; }
         .v-info p { margin: 5px 0 0; font-size: 12px; color: #888; }
+        
+        .duration-tag { font-size: 11px; background: #1a1a1a; padding: 4px 10px; border-radius: 6px; color: #fff; border: 1px solid #333; font-weight: 600; }
 
         .btn-action { 
             background: var(--neon); color: #000; border: none; 
@@ -45,9 +52,7 @@
         }
 
         .btn-claim { 
-            background: #ffffff; 
-            display: none; 
-            color: #000; 
+            background: #ffffff; display: none; color: #000; 
             box-shadow: 0 0 20px rgba(255,255,255,0.4); 
             animation: pulse 1.5s infinite;
         }
@@ -61,7 +66,7 @@
             font-size: 10px; font-weight: 900; z-index: 10; 
         }
         
-        /* MODAL */
+        /* Modal Styles */
         #upgradeModal { 
             position: fixed; top: 0; left: 0; width: 100%; height: 100%; 
             background: rgba(0,0,0,0.95); display: none; align-items: center; 
@@ -77,17 +82,18 @@
             padding: 15px; border-radius: 12px; font-weight: 800; 
             text-decoration: none; margin-bottom: 10px; text-transform: uppercase; 
         }
-        .m-back { 
-            background: transparent; color: #888; border: 1px solid #222; 
-            width: 100%; padding: 12px; border-radius: 12px; cursor: pointer; 
-            font-weight: 600; margin-top: 5px; 
-        }
+        .m-back { background: transparent; color: #888; border: 1px solid #222; width: 100%; padding: 12px; border-radius: 12px; cursor: pointer; font-weight: 600; margin-top: 5px; }
     </style>
 </head>
 <body>
 
     <div class="header">
         <a href="reward.html" class="back-btn"><i class="fas fa-arrow-left"></i> Dashboard</a>
+    </div>
+
+    <div class="headline-section">
+        <h1>WATCH & EARN</h1>
+        <p>Authorize daily visual data streams to generate network dividends.</p>
     </div>
 
     <div class="video-container" id="ad1Container">
@@ -100,10 +106,13 @@
             </div>
             <div class="v-info">
                 <div style="display: flex; justify-content: space-between; align-items: center;">
-                    <h3>Trial Video Node #1</h3>
+                    <h3>Watch Stream Node #1</h3>
+                    <span class="duration-tag">30 Seconds</span>
+                </div>
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 10px;">
+                    <p id="statusMsg" style="margin:0;">Stream the node to authorize ₦3,000 revenue.</p>
                     <span style="color: var(--neon); font-weight: 800;">+₦3,000</span>
                 </div>
-                <p id="statusMsg">Stream the trial node fully to authorize revenue.</p>
             </div>
             <button class="btn-action" id="startBtn" onclick="playVideo()">Start Stream</button>
             <button class="btn-action btn-claim" id="claimBtn" onclick="claimRewardNow()">Claim ₦3,000 Reward</button>
@@ -114,7 +123,7 @@
                 <i class="fas fa-lock" style="font-size: 40px; color: #ffcc00;"></i>
             </div>
             <div class="v-info">
-                <h3>Trial Stream (Completed)</h3>
+                <h3>Watch Stream (Completed)</h3>
                 <p style="color: #ff4444;">Access for trial users is limited to 1 node/day.</p>
             </div>
             <button class="btn-action" style="background: #111; color: #444;">Upgrade to Continue</button>
@@ -172,7 +181,7 @@
 
             btn.disabled = true;
             btn.style.opacity = "0.5";
-            btn.innerText = "Processing Data...";
+            btn.innerText = "Analyzing Node Stream...";
             
             video.muted = false; 
             video.play();
@@ -185,26 +194,24 @@
             video.onended = () => {
                 document.getElementById('startBtn').style.display = "none";
                 document.getElementById('claimBtn').style.display = "block";
-                document.getElementById('statusMsg').innerText = "Authorization Ready.";
+                document.getElementById('statusMsg').innerText = "Verification Complete.";
                 document.getElementById('statusMsg').style.color = "var(--neon)";
             };
         }
 
         async function claimRewardNow() {
             const claimBtn = document.getElementById('claimBtn');
-            claimBtn.innerText = "Syncing...";
+            claimBtn.innerText = "Syncing Balance...";
             claimBtn.disabled = true;
 
             const { data: { user } } = await supabaseClient.auth.getUser();
             
-            // SMART FETCH: Fetches the absolute latest balance from DB
             let { data: profile } = await supabaseClient.from('profiles').select('balance').eq('id', user.id).single();
             
             const currentBalance = Number(profile.balance) || 0;
             const rewardAmount = 3000;
             const newTotal = currentBalance + rewardAmount;
 
-            // Updates both the balance AND marks the task as done
             const { error } = await supabaseClient
                 .from('profiles')
                 .update({ balance: newTotal, v_done: true })
