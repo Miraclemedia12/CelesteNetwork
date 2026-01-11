@@ -7,206 +7,15 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
-        :root { --neon: #00ff55; --bg: #000000; --card: #111111; --input: #121212; }
-        body { background: var(--bg); color: #fff; font-family: 'Inter', sans-serif; -webkit-tap-highlight-color: transparent; }
-        
-        .glass-container { 
-            background: #080808; 
-            border-radius: 40px; 
-            border: 1px solid rgba(255,255,255,0.05); 
-            padding: 30px 20px; 
-            box-shadow: 0 20px 50px rgba(0,0,0,0.8);
-        }
-
-        .input-group { margin-bottom: 20px; }
-        .input-group label { 
-            display: block; 
-            font-size: 10px; 
-            font-weight: 900; 
-            text-transform: uppercase; 
-            color: #444; 
-            margin-bottom: 8px; 
-            margin-left: 12px; 
-            letter-spacing: 2px; 
-        }
-
-        .input-field { 
-            width: 100%; 
-            background: var(--input); 
-            border: 1px solid #1a1a1a; 
-            border-radius: 18px; 
-            padding: 16px; 
-            color: #fff; 
-            font-size: 14px; 
-            outline: none; 
-            transition: 0.3s; 
-        }
-
-        .input-field:focus { 
-            border-color: var(--neon); 
-            background: #161616;
-            box-shadow: 0 0 15px rgba(0,255,85,0.05); 
-        }
-
-        .section-title { 
-            font-size: 14px; 
-            font-weight: 900; 
-            margin: 35px 0 20px 10px; 
-            color: var(--neon); 
-            letter-spacing: 3px;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-        
-        .avatar-circle { 
-            width: 100px; 
-            height: 100px; 
-            border: 2px solid var(--neon); 
-            border-radius: 50%; 
-            margin: 0 auto 15px; 
-            display: flex; 
-            align-items: center; 
-            justify-content: center; 
-            background: radial-gradient(circle, #111 0%, #000 100%); 
-            position: relative;
-            box-shadow: 0 0 20px rgba(0, 255, 85, 0.1);
-        }
-
-        /* Custom Scrollbar */
-        ::-webkit-scrollbar { width: 4px; }
-        ::-webkit-scrollbar-track { background: #000; }
-        ::-webkit-scrollbar-thumb { background: #222; border-radius: 10px; }
-    </style>
-</head>
-<body class="min-h-screen p-4 flex flex-col items-center pb-12">
-
-    <div class="w-full max-w-md">
-        <!-- Header -->
-        <div class="flex items-center justify-between mb-8 mt-4 px-2">
-            <a href="reward.html" class="w-10 h-10 rounded-full bg-white/5 flex items-center justify-center text-white border border-white/10 active:scale-90 transition-all">
-                <i class="fas fa-chevron-left"></i>
-            </a>
-            <h1 class="text-xs font-black uppercase tracking-[0.5em] text-gray-400">Profile</h1>
-            <div class="w-10"></div>
-        </div>
-
-        <div class="glass-container">
-            <!-- Profile Photo Section -->
-            <div class="text-center mb-10">
-                <div class="avatar-circle">
-                    <i class="fas fa-user-shield text-4xl text-neon opacity-80"></i>
-                </div>
-                <h2 id="display-username" class="text-lg font-black italic tracking-tighter mb-1">...</h2>
-                <p class="text-[9px] font-bold text-gray-500 uppercase tracking-widest">Authorized User</p>
-            </div>
-
-            <!-- Personal Data -->
-            <div class="input-group">
-                <label>Full Name</label>
-                <input type="text" id="fullName" class="input-field" placeholder="Legal Name">
-            </div>
-
-            <div class="input-group">
-                <label>Email Protocol</label>
-                <input type="email" id="email" class="input-field" readonly style="color: #444; border-style: dashed;">
-            </div>
-
-            <div class="input-group">
-                <label>Phone Line</label>
-                <input type="tel" id="phone" class="input-field" placeholder="+234...">
-            </div>
-
-            <div class="input-group">
-                <label>Display Username</label>
-                <input type="text" id="username" class="input-field" placeholder="@username">
-            </div>
-
-            <!-- Withdrawal Section -->
-            <h2 class="section-title italic uppercase">
-                <i class="fas fa-university text-[10px]"></i> Financial Gateway
-            </h2>
-
-            <div class="input-group">
-                <label>Bank Institution</label>
-                <select id="bankName" class="input-field">
-                    <option value="" disabled selected>Select Bank</option>
-                    <option value="opay">OPay</option>
-                    <option value="palmpay">PalmPay</option>
-                    <option value="moniepoint">Moniepoint MFB</option>
-                    <option value="kuda">Kuda Microfinance Bank</option>
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Profile Settings | Celeste Network</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <script src="https://cdn.tailwindcss.com"></script>
-    <style>
         :root { --neon: #00ff55; --bg: #000000; --input: #121212; }
         body { background: var(--bg); color: #fff; font-family: 'Inter', sans-serif; -webkit-tap-highlight-color: transparent; }
-        
-        .glass-container { 
-            background: #080808; 
-            border-radius: 40px; 
-            border: 1px solid rgba(255,255,255,0.05); 
-            padding: 30px 20px; 
-            box-shadow: 0 20px 50px rgba(0,0,0,0.8);
-        }
-
+        .glass-container { background: #080808; border-radius: 40px; border: 1px solid rgba(255,255,255,0.05); padding: 30px 20px; box-shadow: 0 20px 50px rgba(0,0,0,0.8); }
         .input-group { margin-bottom: 20px; }
-        .input-group label { 
-            display: block; 
-            font-size: 10px; 
-            font-weight: 900; 
-            text-transform: uppercase; 
-            color: #444; 
-            margin-bottom: 8px; 
-            margin-left: 12px; 
-            letter-spacing: 2px; 
-        }
-
-        .input-field { 
-            width: 100%; 
-            background: var(--input); 
-            border: 1px solid #1a1a1a; 
-            border-radius: 18px; 
-            padding: 16px; 
-            color: #fff; 
-            font-size: 14px; 
-            outline: none; 
-            transition: 0.3s; 
-        }
-
-        .input-field:focus { 
-            border-color: var(--neon); 
-            background: #161616;
-        }
-
-        .section-title { 
-            font-size: 14px; 
-            font-weight: 900; 
-            margin: 35px 0 20px 10px; 
-            color: var(--neon); 
-            letter-spacing: 3px;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-        
-        .avatar-circle { 
-            width: 100px; 
-            height: 100px; 
-            border: 2px solid var(--neon); 
-            border-radius: 50%; 
-            margin: 0 auto 15px; 
-            display: flex; 
-            align-items: center; 
-            justify-content: center; 
-            background: #111;
-            box-shadow: 0 0 20px rgba(0, 255, 85, 0.1);
-        }
+        .input-group label { display: block; font-size: 10px; font-weight: 900; text-transform: uppercase; color: #444; margin-bottom: 8px; margin-left: 12px; letter-spacing: 2px; }
+        .input-field { width: 100%; background: var(--input); border: 1px solid #1a1a1a; border-radius: 18px; padding: 16px; color: #fff; font-size: 14px; outline: none; transition: 0.3s; }
+        .input-field:focus { border-color: var(--neon); background: #161616; }
+        .section-title { font-size: 14px; font-weight: 900; margin: 35px 0 20px 10px; color: var(--neon); letter-spacing: 3px; display: flex; align-items: center; gap: 10px; }
+        .avatar-circle { width: 100px; height: 100px; border: 2px solid var(--neon); border-radius: 50%; margin: 0 auto 15px; display: flex; align-items: center; justify-content: center; background: #111; box-shadow: 0 0 20px rgba(0, 255, 85, 0.1); }
     </style>
 </head>
 <body class="min-h-screen p-4 flex flex-col items-center pb-12">
@@ -223,10 +32,10 @@
         <div class="glass-container">
             <div class="text-center mb-10">
                 <div class="avatar-circle">
-                    <i class="fas fa-user-shield text-4xl text-neon opacity-80" style="color: #00ff55;"></i>
+                    <i class="fas fa-user-shield text-4xl" style="color: #00ff55;"></i>
                 </div>
                 <h2 id="header-username" class="text-lg font-black italic tracking-tighter mb-1 uppercase">Loading...</h2>
-                <p class="text-[9px] font-bold text-gray-500 uppercase tracking-widest">Verified Node Member</p>
+                <p class="text-[9px] font-bold text-gray-500 uppercase tracking-widest">Authorized Node</p>
             </div>
 
             <div class="input-group">
@@ -236,7 +45,7 @@
 
             <div class="input-group">
                 <label>Email Protocol</label>
-                <input type="email" id="email" class="input-field" readonly style="color: #444; border-style: dashed;">
+                <input type="email" id="email_display" class="input-field" readonly style="color: #444; border-style: dashed;">
             </div>
 
             <div class="input-group">
@@ -261,11 +70,13 @@
                     <option value="PalmPay">PalmPay</option>
                     <option value="Moniepoint">Moniepoint MFB</option>
                     <option value="Kuda">Kuda Bank</option>
-                    <option value="GTBank">Guaranty Trust Bank</option>
+                    <option value="GTBank">GTBank</option>
                     <option value="Zenith">Zenith Bank</option>
                     <option value="Access">Access Bank</option>
                     <option value="FirstBank">First Bank of Nigeria</option>
                     <option value="UBA">United Bank for Africa</option>
+                    <option value="UBA">Union Bank</option>
+                    <option value="UBA">Wema</option>
                 </select>
             </div>
 
@@ -280,12 +91,11 @@
             </div>
 
             <div class="pt-6 space-y-4">
-                <button onclick="saveProfile()" id="saveBtn" class="w-full bg-[#00ff55] text-black font-black py-5 rounded-2xl uppercase tracking-[0.2em] text-[11px] shadow-[0_10px_20px_rgba(0,255,85,0.15)] active:scale-95 transition-all">
+                <button onclick="saveProfile()" id="saveBtn" class="w-full bg-[#00ff55] text-black font-black py-5 rounded-2xl uppercase tracking-[0.2em] text-[11px] active:scale-95 transition-all">
                     Save Changes
                 </button>
-
                 <button onclick="logout()" class="w-full bg-red-500/5 text-red-500 font-black py-5 rounded-2xl uppercase tracking-[0.2em] text-[11px] border border-red-500/10 active:scale-95 transition-all">
-                    Logout Account
+                    Logout
                 </button>
             </div>
         </div>
@@ -301,36 +111,29 @@
             const { data: { user } } = await supabaseClient.auth.getUser();
             if(!user) { window.location.href = 'index.html'; return; }
 
-            document.getElementById('email').value = user.email;
+            document.getElementById('email_display').value = user.email;
 
-            const { data, error } = await supabaseClient
-                .from('profiles')
-                .select('*')
-                .eq('id', user.id)
-                .single();
+            const { data } = await supabaseClient.from('profiles').select('*').eq('id', user.id).single();
 
             if(data) {
+                // Map database values to HTML inputs
                 document.getElementById('full_name').value = data.full_name || '';
                 document.getElementById('phone').value = data.phone || '';
                 document.getElementById('username').value = data.username || '';
                 document.getElementById('bank_name').value = data.bank_name || '';
                 document.getElementById('account_number').value = data.account_number || '';
                 document.getElementById('holder_name').value = data.holder_name || '';
-                
-                // Update header with username or email prefix
                 document.getElementById('header-username').innerText = data.username || user.email.split('@')[0];
             }
         }
 
         async function saveProfile() {
             const btn = document.getElementById('saveBtn');
-            const originalText = btn.innerText;
             btn.disabled = true;
             btn.innerText = "SYNCHRONIZING...";
             
             const { data: { user } } = await supabaseClient.auth.getUser();
             
-            // THESE KEYS MATCH YOUR SQL COLUMNS EXACTLY
             const updates = {
                 id: user.id,
                 full_name: document.getElementById('full_name').value,
@@ -342,22 +145,20 @@
                 updated_at: new Date()
             };
 
-            const { error } = await supabaseClient
-                .from('profiles')
-                .upsert(updates, { onConflict: 'id' });
+            const { error } = await supabaseClient.from('profiles').upsert(updates, { onConflict: 'id' });
             
             if(error) {
                 alert("Protocol Error: " + error.message);
                 btn.disabled = false;
-                btn.innerText = originalText;
+                btn.innerText = "Save Changes";
             } else {
                 btn.style.backgroundColor = "#fff";
-                btn.innerText = "SUCCESS";
+                btn.innerText = "SUCCESS ✓";
                 setTimeout(() => {
                     btn.style.backgroundColor = "#00ff55";
-                    btn.innerText = originalText;
+                    btn.innerText = "Save Changes";
                     btn.disabled = false;
-                    loadProfile(); // Refresh the header name
+                    loadProfile();
                 }, 2000);
             }
         }
