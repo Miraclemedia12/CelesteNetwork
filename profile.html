@@ -66,28 +66,28 @@
                 <label>Bank Institution</label>
                 <select id="bank_name" class="input-field">
                     <option value="" disabled selected>Select Bank</option>
-                    <option value="OPay">OPay</option>
-                    <option value="PalmPay">PalmPay</option>
-                    <option value="Moniepoint">Moniepoint MFB</option>
-                    <option value="Kuda">Kuda Bank</option>
-                    <option value="GTBank">GTBank</option>
-                    <option value="Zenith">Zenith Bank</option>
-                    <option value="Access">Access Bank</option>
-                    <option value="FirstBank">First Bank of Nigeria</option>
-                    <option value="UBA">United Bank for Africa</option>
-                    <option value="UBA">Union Bank</option>
-                    <option value="UBA">Wema</option>
+                    <option value="95051">OPay</option>
+                    <option value="999991">PalmPay</option>
+                    <option value="50515">Moniepoint MFB</option>
+                    <option value="090267">Kuda Bank</option>
+                    <option value="058">GTBank</option>
+                    <option value="057">Zenith Bank</option>
+                    <option value="044">Access Bank</option>
+                    <option value="011">First Bank</option>
+                    <option value="033">United Bank for Africa (UBA)</option>
+                    <option value="032">Union Bank</option>
+                    <option value="035">Wema Bank</option>
                 </select>
             </div>
 
             <div class="input-group">
                 <label>Account Number</label>
-                <input type="number" id="account_number" class="input-field" placeholder="10 Digits">
+                <input type="number" id="account_number" class="input-field" placeholder="10 Digits" oninput="detectAccount()">
             </div>
 
             <div class="input-group">
                 <label>Holder Name</label>
-                <input type="text" id="holder_name" class="input-field" placeholder="Full Bank Name">
+                <input type="text" id="holder_name" class="input-field" placeholder="Full Bank Name" readonly>
             </div>
 
             <div class="pt-6 space-y-4">
@@ -116,7 +116,6 @@
             const { data } = await supabaseClient.from('profiles').select('*').eq('id', user.id).single();
 
             if(data) {
-                // Map database values to HTML inputs
                 document.getElementById('full_name').value = data.full_name || '';
                 document.getElementById('phone').value = data.phone || '';
                 document.getElementById('username').value = data.username || '';
@@ -124,6 +123,35 @@
                 document.getElementById('account_number').value = data.account_number || '';
                 document.getElementById('holder_name').value = data.holder_name || '';
                 document.getElementById('header-username').innerText = data.username || user.email.split('@')[0];
+            }
+        }
+
+        // NEW: Detection function using your Edge Function
+        async function detectAccount() {
+            const accNum = document.getElementById('account_number').value;
+            const bankCode = document.getElementById('bank_name').value;
+            const holderField = document.getElementById('holder_name');
+
+            if (accNum.length === 10 && bankCode !== "") {
+                holderField.value = "VERIFYING...";
+                holderField.style.color = "#888";
+
+                try {
+                    const { data, error } = await supabaseClient.functions.invoke('resolve-bank', {
+                        body: { account_number: accNum, account_bank: bankCode }
+                    });
+
+                    if (data && data.status === "success") {
+                        holderField.value = data.data.account_name;
+                        holderField.style.color = "#00ff55";
+                    } else {
+                        holderField.value = "ACCOUNT NOT FOUND";
+                        holderField.style.color = "#ff4444";
+                    }
+                } catch (err) {
+                    console.error(err);
+                    holderField.value = "ERROR CONNECTING";
+                }
             }
         }
 
