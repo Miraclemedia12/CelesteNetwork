@@ -65,7 +65,7 @@
 </head>
 <body>
 
-    <div id="upgradeModal"><div class="modal-box"><i class="fas fa-lock" style="font-size:40px;color:var(--neon);margin-bottom:15px;"></i><h2 style="color:#fff;">Premium Task</h2><p style="color:#888;margin-bottom:20px;">Upgrade to unlock TikTok, Twitter, and Casino tasks!</p><a href="upgrade.html" class="m-btn-up">Upgrade Now</a><button class="m-btn-back" onclick="closeModal()">Close</button></div></div>
+    <div id="upgradeModal"><div class="modal-box"><i class="fas fa-lock" style="font-size:40px;color:var(--neon);margin-bottom:15px;"></i><h2 style="color:#fff;">Premium Task</h2><p id="modalMsg" style="color:#888;margin-bottom:20px;">Upgrade to unlock TikTok, Twitter, and Casino tasks!</p><a href="upgrade.html" class="m-btn-up">Upgrade Now</a><button class="m-btn-back" onclick="closeModal()">Close</button></div></div>
     
     <div class="overlay" id="overlay" onclick="closeAll()"></div>
     
@@ -86,7 +86,7 @@
     <div class="balance-box" id="mainBalBox">
         <div class="plan-pill">
             <span>Free Plan</span>
-            <span class="expiry-warn" id="expiryLabel">2 Days Remaining</span>
+            <span class="expiry-warn" id="expiryLabel">Calculating...</span>
         </div>
         <p style="font-size:10px;color:var(--soft-text);letter-spacing:1px;">AVAILABLE BALANCE</p>
         <h1 id="balTxt">...</h1>
@@ -95,11 +95,12 @@
 
     <div class="section-title">Earning Tasks</div>
     <div class="task-row">
-        <div class="task-item" onclick="window.location.href='watch.html'"><div class="circle-wrap"><i class="fas fa-play"></i></div><span>Watch Ads</span></div>
-        <div class="task-item" onclick="window.location.href='telegram.html'"><div class="circle-wrap"><i class="fab fa-telegram-plane"></i></div><span>Telegram</span></div>
-        <div class="task-item" onclick="showPop()"><div class="circle-wrap locked"><i class="fab fa-tiktok"></i><div class="lock-tag"><i class="fas fa-lock"></i></div></div><span>TikTok</span></div>
-        <div class="task-item" onclick="showPop()"><div class="circle-wrap locked"><i class="fab fa-twitter"></i><div class="lock-tag"><i class="fas fa-lock"></i></div></div><span>Twitter</span></div>
-        <div class="task-item" onclick="showPop()"><div class="circle-wrap locked"><i class="fas fa-dice"></i><div class="lock-tag"><i class="fas fa-lock"></i></div></div><span>Casino</span></div>
+        <div class="task-item" onclick="handleTaskClick('watch.html')"><div class="circle-wrap"><i class="fas fa-play"></i></div><span>Watch Ads</span></div>
+        <div class="task-item" onclick="handleTaskClick('telegram.html')"><div class="circle-wrap"><i class="fab fa-telegram-plane"></i></div><span>Telegram</span></div>
+        
+        <div class="task-item" onclick="showPop('Upgrade to unlock TikTok, Twitter, and Casino tasks!')"><div class="circle-wrap locked"><i class="fab fa-tiktok"></i><div class="lock-tag"><i class="fas fa-lock"></i></div></div><span>TikTok</span></div>
+        <div class="task-item" onclick="showPop('Upgrade to unlock TikTok, Twitter, and Casino tasks!')"><div class="circle-wrap locked"><i class="fab fa-twitter"></i><div class="lock-tag"><i class="fas fa-lock"></i></div></div><span>Twitter</span></div>
+        <div class="task-item" onclick="showPop('Upgrade to unlock TikTok, Twitter, and Casino tasks!')"><div class="circle-wrap locked"><i class="fas fa-dice"></i><div class="lock-tag"><i class="fas fa-lock"></i></div></div><span>Casino</span></div>
     </div>
 
     <div class="section-title">Performance</div>
@@ -126,6 +127,7 @@
 
         let isNaira = localStorage.getItem('userCur') === 'EURO' ? false : true;
         let profileData = null;
+        let isExpired = false; // Tracks if the 2-day period is over
 
         async function loadData() {
             const { data: { user } } = await supabaseClient.auth.getUser();
@@ -137,7 +139,40 @@
             document.getElementById('userName').innerText = user.email.split('@')[0].toUpperCase();
             document.getElementById('userInit').innerText = user.email.charAt(0).toUpperCase();
             
+            // Initialize Personal Timer
+            startCountdown(user.created_at);
             updateDisplay();
+        }
+
+        // Personalized 48-hour Timer Logic
+        function startCountdown(signupTime) {
+            const expiryDate = new Date(signupTime).getTime() + (2 * 24 * 60 * 60 * 1000);
+            
+            const x = setInterval(function() {
+                const now = new Date().getTime();
+                const distance = expiryDate - now;
+
+                const days = Math.floor(distance / (1000 * 60 * 60 * 24));
+                const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+                const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+
+                if (distance < 0) {
+                    clearInterval(x);
+                    document.getElementById("expiryLabel").innerText = "TRIAL EXPIRED";
+                    isExpired = true; // Lock the tasks
+                } else {
+                    document.getElementById("expiryLabel").innerText = `${days}d ${hours}h ${minutes}m Left`;
+                }
+            }, 1000);
+        }
+
+        // Verifies trial status before opening tasks
+        function handleTaskClick(page) {
+            if(isExpired) {
+                showPop("Your 2-day trial has expired. Upgrade to keep earning!");
+            } else {
+                window.location.href = page;
+            }
         }
 
         function updateDisplay() {
@@ -146,7 +181,6 @@
             const labelEl = document.getElementById('curLabel');
             const container = document.getElementById('txContainer');
 
-            // Currency Display & Memory
             if(isNaira) {
                 balEl.innerText = "₦" + profileData.balance.toLocaleString();
                 labelEl.innerText = "NAIRA";
@@ -157,12 +191,10 @@
                 localStorage.setItem('userCur', 'EURO');
             }
             
-            // Performance Stats
             document.getElementById('vProg').innerText = (profileData.v_done ? "1 / 2" : "0 / 2");
             let tCount = (profileData.t1_done ? 1 : 0) + (profileData.t2_done ? 1 : 0);
             document.getElementById('tProg').innerText = tCount + " / 2";
 
-            // History (LATEST TASKS AT THE TOP)
             container.innerHTML = "";
             if(profileData.t2_done) addTx(container, "Telegram Task 2", "Joined Community Hub", 2000, "fa-check-double");
             if(profileData.t1_done) addTx(container, "Telegram Task 1", "Joined Official Channel", 2000, "fa-paper-plane");
@@ -185,7 +217,12 @@
         }
 
         function toggleCur() { isNaira = !isNaira; updateDisplay(); }
-        function showPop() { document.getElementById('upgradeModal').style.display = 'flex'; }
+        
+        function showPop(msg) { 
+            if(msg) document.getElementById('modalMsg').innerText = msg;
+            document.getElementById('upgradeModal').style.display = 'flex'; 
+        }
+        
         function closeModal() { document.getElementById('upgradeModal').style.display = 'none'; }
         function openSidebar() { document.getElementById('sidebar').classList.add('active'); document.getElementById('overlay').classList.add('active'); }
         function closeAll() { document.getElementById('sidebar').classList.remove('active'); document.getElementById('overlay').classList.remove('active'); closeModal(); }
