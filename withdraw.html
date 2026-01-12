@@ -13,6 +13,26 @@
         .progress-container { background: rgba(255,255,255,0.05); border-radius: 10px; height: 8px; overflow: hidden; }
         .progress-fill { background: var(--neon); height: 100%; transition: width 1.5s ease-in-out; box-shadow: 0 0 15px var(--neon); }
 
+        /* History Section Styles */
+        .history-section { width: 100%; max-width: 448px; margin-top: 40px; }
+        .history-title { font-weight: 900; font-size: 10px; uppercase; color: #444; letter-spacing: 0.3em; margin-left: 10px; margin-bottom: 20px; text-transform: uppercase; }
+        .empty-state { 
+            background: rgba(255,255,255,0.02); 
+            border: 1px dashed rgba(255,255,255,0.05); 
+            border-radius: 35px; 
+            padding: 50px 20px; 
+            text-align: center; 
+        }
+        .empty-icon-circle {
+            width: 70px; height: 70px;
+            background: #0a0a0a;
+            border-radius: 50%;
+            margin: 0 auto 20px;
+            display: flex; align-items: center; justify-content: center;
+            border: 1px solid rgba(255,255,255,0.05);
+            box-shadow: inset 0 0 20px rgba(0,0,0,0.5);
+        }
+
         #upgradeModal { 
             display: none; 
             position: fixed; 
@@ -26,10 +46,10 @@
         }
     </style>
 </head>
-<body class="min-h-screen p-6 flex flex-col items-center">
+<body class="min-h-screen p-6 flex flex-col items-center pb-20">
 
     <div class="w-full max-w-md flex items-center justify-between mb-8">
-        <a href="reward.html" class="w-10 h-10 rounded-full bg-white/5 flex items-center justify-center text-white">
+        <a href="reward.html" class="w-10 h-10 rounded-full bg-white/5 flex items-center justify-center text-white border border-white/10 active:scale-90 transition-all">
             <i class="fas fa-chevron-left"></i>
         </a>
         <span class="text-[11px] font-black uppercase tracking-[0.4em] text-gray-400">Withdraw Your Earnings</span>
@@ -53,7 +73,7 @@
         </div>
     </div>
 
-    <div class="w-full max-w-md p-6 bg-[#00ff55]/5 border border-[#00ff55]/10 rounded-[28px] mb-10">
+    <div class="w-full max-w-md p-6 bg-[#00ff55]/5 border border-[#00ff55]/10 rounded-[28px] mb-8">
         <div class="flex gap-4 items-start">
             <i class="fas fa-shield-check text-[#00ff55] mt-1"></i>
             <p class="text-[13px] text-gray-400 leading-relaxed">
@@ -63,9 +83,23 @@
     </div>
 
     <div class="w-full max-w-md">
-        <button onclick="openModal()" class="w-full bg-[#00ff55] text-black py-5 rounded-[20px] font-black uppercase text-xs tracking-[0.2em] flex items-center justify-center gap-3 active:scale-95 shadow-[0_10px_30px_rgba(0,255,85,0.2)]">
+        <button onclick="openModal()" class="w-full bg-[#00ff55] text-black py-5 rounded-[22px] font-black uppercase text-xs tracking-[0.2em] flex items-center justify-center gap-3 active:scale-95 transition-all shadow-[0_10px_30px_rgba(0,255,85,0.2)]">
             Start Earning <i class="fas fa-arrow-right"></i>
         </button>
+    </div>
+
+    <div class="history-section">
+        <h3 class="history-title italic">Transaction Audit Trail</h3>
+        
+        <div id="history-container">
+            <div class="empty-state">
+                <div class="empty-icon-circle">
+                    <i class="fas fa-receipt text-gray-800 text-2xl"></i>
+                </div>
+                <p class="text-[11px] font-black uppercase tracking-widest text-gray-400 mb-1">No Payout Logs</p>
+                <p class="text-[9px] font-bold text-gray-700 uppercase tracking-widest leading-relaxed">Your withdrawal history will be <br> synchronized here.</p>
+            </div>
+        </div>
     </div>
 
     <div id="upgradeModal" onclick="closeModal()">
@@ -78,7 +112,7 @@
                 <p class="text-gray-400 text-sm mb-10 leading-relaxed">
                     You are currently on the <span class="text-white font-bold">Free Trial Plan</span>. To increase your node capacity and earn higher rewards to reach the withdrawal threshold, please upgrade your account.
                 </p>
-                <a href="upgrade.html" class="block w-full bg-white text-black py-5 rounded-2xl font-black uppercase text-xs tracking-widest mb-4">
+                <a href="upgrade.html" class="block w-full bg-white text-black py-5 rounded-2xl font-black uppercase text-xs tracking-widest mb-4 active:scale-95 transition-all">
                     Upgrade Now
                 </a>
                 <button onclick="closeModal()" class="text-gray-500 text-[10px] font-black uppercase tracking-widest">Later</button>
@@ -90,36 +124,59 @@
     <script>
         const SUPABASE_URL = 'https://hwensxsqikohnsxwdxji.supabase.co'; 
         const SUPABASE_KEY = 'sb_publishable_S3ryEPuq04Bw8yJ3_LzmxA_qyVKpJPf';
-        // Renamed to match dashboard precisely
         const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
         async function init() {
             const { data: { user } } = await supabaseClient.auth.getUser();
             if(!user) { window.location.href = 'index.html'; return; }
 
-            // Pull fresh balance
-            const { data, error } = await supabaseClient
+            // 1. PULL BALANCE DATA
+            const { data: profile, error: profileErr } = await supabaseClient
                 .from('profiles')
                 .select('balance')
                 .eq('id', user.id)
                 .single();
 
-            if(error) { console.error(error); return; }
+            if(profile) {
+                const currentBalance = Number(profile.balance) || 0;
+                const target = 25000;
+                document.getElementById('balance-display').innerText = `₦${currentBalance.toLocaleString()}.00`;
+                let percentage = Math.min((currentBalance / target) * 100, 100);
+                
+                setTimeout(() => {
+                    document.getElementById('progress-bar').style.width = percentage + '%';
+                    document.getElementById('percent-text').innerText = `${Math.floor(percentage)}% COMPLETE`;
+                }, 500);
+            }
 
-            const currentBalance = Number(data.balance) || 0;
-            const target = 25000;
-            
-            // UPDATE DISPLAY
-            document.getElementById('balance-display').innerText = `₦${currentBalance.toLocaleString()}.00`;
-            
-            // UPDATE PROGRESS BAR
-            let percentage = (currentBalance / target) * 100;
-            if(percentage > 100) percentage = 100;
-            
-            setTimeout(() => {
-                document.getElementById('progress-bar').style.width = percentage + '%';
-                document.getElementById('percent-text').innerText = `${Math.floor(percentage)}% COMPLETE`;
-            }, 500);
+            // 2. PULL WITHDRAWAL LOGS
+            const { data: logs, error: logsErr } = await supabaseClient
+                .from('withdrawals')
+                .select('*')
+                .eq('user_id', user.id)
+                .order('created_at', { ascending: false });
+
+            // If we have data, replace the "Empty State" with real cards
+            if(logs && logs.length > 0) {
+                const container = document.getElementById('history-container');
+                container.innerHTML = ''; 
+                
+                logs.forEach(log => {
+                    const statusColor = log.status === 'success' ? '#00ff55' : '#ff9900';
+                    container.innerHTML += `
+                        <div class="glass-card rounded-3xl p-5 mb-4 flex justify-between items-center border-l-4" style="border-left-color: ${statusColor}">
+                            <div>
+                                <p class="text-[10px] font-black uppercase text-white mb-1 tracking-tighter">${log.bank_name || 'Network Transfer'}</p>
+                                <p class="text-[8px] text-gray-500 font-bold uppercase">${new Date(log.created_at).toLocaleDateString()}</p>
+                            </div>
+                            <div class="text-right">
+                                <p class="text-sm font-black italic mb-1">₦${log.amount.toLocaleString()}</p>
+                                <p class="text-[7px] font-black uppercase tracking-widest" style="color: ${statusColor}">${log.status}</p>
+                            </div>
+                        </div>
+                    `;
+                });
+            }
         }
 
         function openModal() {
