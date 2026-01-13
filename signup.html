@@ -59,10 +59,17 @@
             <div class="input-group"><label>Username</label><input type="text" id="username" placeholder="Username"></div>
             <div class="input-group"><label>Phone</label><input type="tel" id="phone" placeholder="Phone Number"></div>
             <div class="input-group full-width"><label>Email Address</label><input type="email" id="email" placeholder="Email"></div>
+            
             <div class="input-group full-width">
                 <label>Password</label>
                 <input type="password" id="password" placeholder="••••••••">
-                <i class="fas fa-eye toggle-password" id="toggleEye" onclick="togglePasswordVisibility()"></i>
+                <i class="fas fa-eye toggle-password" id="toggleEye" onclick="togglePasswordVisibility('password', 'toggleEye')"></i>
+            </div>
+
+            <div class="input-group full-width">
+                <label>Confirm Password</label>
+                <input type="password" id="confirmPassword" placeholder="••••••••">
+                <i class="fas fa-eye toggle-password" id="toggleEyeConfirm" onclick="togglePasswordVisibility('confirmPassword', 'toggleEyeConfirm')"></i>
             </div>
         </div>
         <button class="btn-reg" id="regBtn" onclick="handleSignUp()">REGISTER</button>
@@ -88,9 +95,9 @@
         const SUPABASE_KEY = 'sb_publishable_S3ryEPuq04Bw8yJ3_LzmxA_qyVKpJPf';
         const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
-        function togglePasswordVisibility() {
-            const passwordInput = document.getElementById('password');
-            const eyeIcon = document.getElementById('toggleEye');
+        function togglePasswordVisibility(inputId, iconId) {
+            const passwordInput = document.getElementById(inputId);
+            const eyeIcon = document.getElementById(iconId);
             if (passwordInput.type === 'password') {
                 passwordInput.type = 'text';
                 eyeIcon.classList.remove('fa-eye');
@@ -105,22 +112,32 @@
         async function handleSignUp() {
             const email = document.getElementById('email').value;
             const password = document.getElementById('password').value;
+            const confirmPassword = document.getElementById('confirmPassword').value;
             const fullName = document.getElementById('fullName').value;
             const username = document.getElementById('username').value;
             const phone = document.getElementById('phone').value;
             const messageDiv = document.getElementById('message');
             const regBtn = document.getElementById('regBtn');
 
-            if(!email || !password) {
+            // Reset message
+            messageDiv.innerText = "";
+
+            if(!email || !password || !confirmPassword) {
                 messageDiv.style.color = "#ff4444";
-                messageDiv.innerText = "Email and Password are required.";
+                messageDiv.innerText = "All fields are required.";
+                return;
+            }
+
+            // Check if passwords match
+            if (password !== confirmPassword) {
+                messageDiv.style.color = "#ff4444";
+                messageDiv.innerText = "Passwords do not match.";
                 return;
             }
 
             regBtn.innerText = "Processing Protocol...";
             regBtn.disabled = true;
             
-            // Added options to redirect specifically to your confirm.html
             const { data, error } = await supabaseClient.auth.signUp({ 
                 email, 
                 password,
@@ -140,7 +157,6 @@
                 messageDiv.style.color = "#ff4444";
                 messageDiv.innerText = error.message;
             } else {
-                // Show professional Success Modal
                 document.getElementById('successModal').style.display = 'flex';
             }
         }
