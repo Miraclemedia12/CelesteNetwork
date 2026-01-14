@@ -10,32 +10,89 @@
         @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;800&display=swap');
         :root { --neon: #00ff55; --bg: #000; }
         body { font-family: 'Plus Jakarta Sans', sans-serif; background: #000; color: #fff; padding: 20px; }
+        
+        /* THE RED EXPIRY BOX - COMPACT & CENTERED */
+        #expiryNoticeBox {
+            display: none; /* Hidden until 3 days pass */
+            background: #ff3b30; 
+            border-radius: 24px;
+            padding: 20px;
+            margin: 0 auto 30px auto; 
+            max-width: 380px; 
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            text-align: center;
+        }
+
+        .expiry-header {
+            color: #000; 
+            font-weight: 800;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            margin-bottom: 12px;
+            font-size: 16px;
+        }
+
+        .expiry-icon {
+            background: var(--neon); 
+            color: #000;
+            width: 22px;
+            height: 22px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+        }
+
+        /* BLUE BUTTON - TAKES USER TO PAYMENT.HTML */
+        .upgrade-blue-btn {
+            background: #00a2ff; 
+            color: white;
+            width: 100%;
+            padding: 14px;
+            border-radius: 14px;
+            font-weight: 800;
+            font-size: 14px;
+            border: none;
+            cursor: pointer;
+            box-shadow: 0 4px 15px rgba(0, 162, 255, 0.3);
+            transition: transform 0.2s;
+        }
+        .upgrade-blue-btn:active { transform: scale(0.98); }
+
         .plan-card { 
             background: rgba(255,255,255,0.03); 
             border: 1px solid rgba(255,255,255,0.08); 
             border-radius: 32px; 
             padding: 30px; 
             margin-bottom: 25px;
-            position: relative;
         }
         .starter-card { 
             border: 1.5px solid var(--neon);
             background: linear-gradient(145deg, rgba(0, 255, 85, 0.05) 0%, rgba(0,0,0,1) 100%);
-            box-shadow: 0 10px 40px rgba(0, 255, 85, 0.1);
         }
-        .feature-list { list-style: none; padding: 0; margin: 20px 0; }
-        .feature-list li { font-size: 13px; color: #aaa; margin-bottom: 12px; display: flex; align-items: center; gap: 10px; }
-        .feature-list li i { color: var(--neon); font-size: 14px; }
-        .btn-current { width: 100%; padding: 16px; border-radius: 16px; background: rgba(255,255,255,0.1); color: #666; font-weight: 800; cursor: not-allowed; text-transform: uppercase; font-size: 12px; }
-        .btn-upgrade { width: 100%; padding: 16px; border-radius: 16px; background: var(--neon); color: #000; font-weight: 800; text-transform: uppercase; font-size: 12px; transition: 0.3s; box-shadow: 0 5px 20px rgba(0, 255, 85, 0.3); }
+        .btn-upgrade { width: 100%; padding: 16px; border-radius: 16px; background: var(--neon); color: #000; font-weight: 800; text-transform: uppercase; }
     </style>
 </head>
 <body>
 
     <div class="max-w-md mx-auto">
+        
+        <div id="expiryNoticeBox">
+            <div class="expiry-header">
+                <div class="expiry-icon"><i class="fas fa-times"></i></div>
+                Free Plan Expired
+            </div>
+            <button class="upgrade-blue-btn" onclick="window.location.href='payment.html'">
+                Upgrade to access all features
+            </button>
+        </div>
+
         <div class="flex items-center gap-4 mb-8">
             <a href="reward.html" class="text-gray-500"><i class="fas fa-arrow-left"></i></a>
-            <h1 class="text-2xl font-black uppercase tracking-tighter italic">PLANS</h1>
+            <h1 class="text-2xl font-black uppercase tracking-tighter italic">Choose Your Plan</h1>
         </div>
 
         <div class="mb-10 space-y-2">
@@ -48,20 +105,14 @@
         </div>
 
         <div class="plan-card">
-            <div class="flex justify-between items-start mb-4">
-                <h3 class="text-lg font-black italic uppercase">Free Plan</h3>
-                <span class="text-[10px] bg-white/10 px-3 py-1 rounded-full font-bold">3 DAYS</span>
-            </div>
-            
-            <ul class="feature-list">
-                <li><i class="fas fa-check-circle"></i> 1 video per /day</li>
-                <li><i class="fas fa-check-circle"></i> €1.5 Per video watch</li>
-                <li><i class="fas fa-check-circle"></i> Max €2.5 daily</li>
-                <li><i class="fas fa-minus-circle opacity-30"></i> Limited To other Tasks</li>
-                <li><i class="fas fa-check-circle"></i> Priority support</li>
+            <h3 class="text-lg font-black italic uppercase mb-4">Free Plan / 3 Days</h3>
+            <ul class="space-y-3 mb-6 text-sm text-gray-400">
+                <li><i class="fas fa-check-circle text-green-500 mr-2"></i> 1 video per /day</li>
+                <li><i class="fas fa-check-circle text-green-500 mr-2"></i> €1.5 Per video watch</li>
+                <li><i class="fas fa-check-circle text-green-500 mr-2"></i> Max €2.5 daily</li>
+                <li><i class="fas fa-minus-circle opacity-30 mr-2"></i> Limited To other Tasks</li>
             </ul>
-
-            <button class="btn-current" disabled>Current Plan</button>
+            <button class="w-full p-4 bg-white/10 text-gray-500 rounded-2xl font-bold cursor-not-allowed" disabled>Current Plan</button>
         </div>
 
         <div class="plan-card starter-card">
@@ -70,19 +121,35 @@
                 <span class="text-[10px] bg-[#00ff55] text-black px-3 py-1 rounded-full font-black">6 MONTHS</span>
             </div>
             <div class="text-2xl font-black mb-6 italic">€7.25</div>
-            
-            <ul class="feature-list">
-                <li><i class="fas fa-bolt"></i> 3 video per day</li>
-                <li><i class="fas fa-bolt"></i> €2.5 per video watch</li>
-                <li><i class="fas fa-bolt"></i> Max €10 / day</li>
-                <li><i class="fas fa-bolt"></i> Unlimited access to all features</li>
-                <li><i class="fas fa-bolt"></i> ViP support</li>
+            <ul class="space-y-3 mb-6 text-sm text-gray-400">
+                <li><i class="fas fa-bolt text-[#00ff55] mr-2"></i> 3 video per day</li>
+                <li><i class="fas fa-bolt text-[#00ff55] mr-2"></i> €2.5 per video watch</li>
+                <li><i class="fas fa-bolt text-[#00ff55] mr-2"></i> Max €10 / day</li>
+                <li><i class="fas fa-bolt text-[#00ff55] mr-2"></i> Unlimited all features</li>
             </ul>
-
             <button onclick="window.location.href='payment.html'" class="btn-upgrade">Upgrade Now</button>
         </div>
     </div>
 
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script>
+        const SUPABASE_URL = 'https://hwensxsqikohnsxwdxji.supabase.co'; 
+        const SUPABASE_KEY = 'sb_publishable_S3ryEPuq04Bw8yJ3_LzmxA_qyVKpJPf';
+        const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+        async function checkExpiry() {
+            const { data: { user } } = await supabaseClient.auth.getUser();
+            if(!user) return;
+
+            const signupTime = new Date(user.created_at).getTime();
+            const now = new Date().getTime();
+            
+            // Show red box if user signed up more than 3 days ago
+            if (now - signupTime > (3 * 24 * 60 * 60 * 1000)) {
+                document.getElementById('expiryNoticeBox').style.display = 'block';
+            }
+        }
+        window.onload = checkExpiry;
+    </script>
 </body>
 </html>
-
