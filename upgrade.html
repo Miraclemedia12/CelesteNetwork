@@ -8,59 +8,51 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;800&display=swap');
-        :root { --neon: #00ff55; --bg: #000; }
+        :root { --neon: #00ff55; --bg: #000; --danger: #ff3b30; }
         body { font-family: 'Plus Jakarta Sans', sans-serif; background: #000; color: #fff; padding: 20px; }
         
-        /* THE RED EXPIRY BOX - COMPACT & CENTERED */
+        /* PROFESSIONAL COMPACT EXPIRY BOX */
         #expiryNoticeBox {
-            display: none; /* Hidden until 3 days pass */
-            background: #ff3b30; 
-            border-radius: 24px;
-            padding: 20px;
-            margin: 0 auto 30px auto; 
-            max-width: 380px; 
-            border: 1px solid rgba(255, 255, 255, 0.2);
+            display: none; 
+            background: #111111; /* Professional Dark Charcoal */
+            border-radius: 20px;
+            padding: 15px;
+            margin: 15px auto 25px auto; 
+            max-width: 340px; /* Reduced size */
+            border: 1px solid rgba(255, 59, 48, 0.4); /* Subtle Neon Red border */
             text-align: center;
         }
 
         .expiry-header {
-            color: #000; 
+            color: #ff3b30; 
             font-weight: 800;
             display: flex;
             align-items: center;
             justify-content: center;
-            gap: 10px;
-            margin-bottom: 12px;
-            font-size: 16px;
+            gap: 8px;
+            margin-bottom: 10px;
+            font-size: 13px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
         }
 
         .expiry-icon {
-            background: var(--neon); 
-            color: #000;
-            width: 22px;
-            height: 22px;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 12px;
+            color: #ff3b30;
+            font-size: 14px;
         }
 
-        /* BLUE BUTTON - TAKES USER TO PAYMENT.HTML */
         .upgrade-blue-btn {
             background: #00a2ff; 
             color: white;
             width: 100%;
-            padding: 14px;
-            border-radius: 14px;
+            padding: 10px;
+            border-radius: 10px;
             font-weight: 800;
-            font-size: 14px;
+            font-size: 12px;
             border: none;
             cursor: pointer;
-            box-shadow: 0 4px 15px rgba(0, 162, 255, 0.3);
-            transition: transform 0.2s;
+            text-transform: uppercase;
         }
-        .upgrade-blue-btn:active { transform: scale(0.98); }
 
         .plan-card { 
             background: rgba(255,255,255,0.03); 
@@ -79,40 +71,40 @@
 <body>
 
     <div class="max-w-md mx-auto">
-        
-        <div id="expiryNoticeBox">
-            <div class="expiry-header">
-                <div class="expiry-icon"><i class="fas fa-times"></i></div>
-                Free Plan Expired
-            </div>
-            <button class="upgrade-blue-btn" onclick="window.location.href='payment.html'">
-                Upgrade to access all features
-            </button>
-        </div>
-
-        <div class="flex items-center gap-4 mb-8">
+        <div class="flex items-center gap-4 mb-6">
             <a href="reward.html" class="text-gray-500"><i class="fas fa-arrow-left"></i></a>
             <h1 class="text-2xl font-black uppercase tracking-tighter italic">Choose Your Plan</h1>
         </div>
 
-        <div class="mb-10 space-y-2">
+        <div class="mb-4">
             <p class="text-[13px] font-bold text-[#00ff55] uppercase tracking-widest leading-relaxed">
                 Subscribe to start earning per Video watch and Telegram Engage.
             </p>
-            <p class="text-[12px] text-gray-500 leading-relaxed font-semibold">
+            
+            <div id="expiryNoticeBox">
+                <div class="expiry-header">
+                    <i class="fas fa-exclamation-circle expiry-icon"></i>
+                    Free Plan Expired
+                </div>
+                <button class="upgrade-blue-btn" onclick="window.location.href='payment.html'">
+                    Upgrade to access all features
+                </button>
+            </div>
+
+            <p class="text-[12px] text-gray-500 leading-relaxed font-semibold mt-4">
                 Higher plans offer more daily earnings and better earnings per Tiktok & Twitter Engage.
             </p>
         </div>
 
-        <div class="plan-card">
+        <div class="plan-card opacity-60">
             <h3 class="text-lg font-black italic uppercase mb-4">Free Plan / 3 Days</h3>
             <ul class="space-y-3 mb-6 text-sm text-gray-400">
-                <li><i class="fas fa-check-circle text-green-500 mr-2"></i> 1 video per /day</li>
-                <li><i class="fas fa-check-circle text-green-500 mr-2"></i> €1.5 Per video watch</li>
-                <li><i class="fas fa-check-circle text-green-500 mr-2"></i> Max €2.5 daily</li>
+                <li><i class="fas fa-check-circle text-gray-600 mr-2"></i> 1 video per /day</li>
+                <li><i class="fas fa-check-circle text-gray-600 mr-2"></i> €1.5 Per video watch</li>
+                <li><i class="fas fa-check-circle text-gray-600 mr-2"></i> Max €2.5 daily</li>
                 <li><i class="fas fa-minus-circle opacity-30 mr-2"></i> Limited To other Tasks</li>
             </ul>
-            <button class="w-full p-4 bg-white/10 text-gray-500 rounded-2xl font-bold cursor-not-allowed" disabled>Current Plan</button>
+            <button class="w-full p-4 bg-white/5 text-gray-600 rounded-2xl font-bold cursor-not-allowed" disabled>Current Plan</button>
         </div>
 
         <div class="plan-card starter-card">
@@ -121,7 +113,7 @@
                 <span class="text-[10px] bg-[#00ff55] text-black px-3 py-1 rounded-full font-black">6 MONTHS</span>
             </div>
             <div class="text-2xl font-black mb-6 italic">€7.25</div>
-            <ul class="space-y-3 mb-6 text-sm text-gray-400">
+            <ul class="space-y-3 mb-6 text-sm text-gray-300">
                 <li><i class="fas fa-bolt text-[#00ff55] mr-2"></i> 3 video per day</li>
                 <li><i class="fas fa-bolt text-[#00ff55] mr-2"></i> €2.5 per video watch</li>
                 <li><i class="fas fa-bolt text-[#00ff55] mr-2"></i> Max €10 / day</li>
@@ -144,7 +136,7 @@
             const signupTime = new Date(user.created_at).getTime();
             const now = new Date().getTime();
             
-            // Show red box if user signed up more than 3 days ago
+            // Show box if older than 3 days
             if (now - signupTime > (3 * 24 * 60 * 60 * 1000)) {
                 document.getElementById('expiryNoticeBox').style.display = 'block';
             }
