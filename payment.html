@@ -25,7 +25,7 @@
         <div class="pay-card">
             <h2 class="text-lg font-bold">Starter Plan</h2>
             <div class="price-tag">₦14,500</div>
-            <p class="text-[12px] text-gray-400 mb-8 leading-relaxed italic">Confirming your upgrade to Starter Plan.</p>
+            <p class="text-[12px] text-gray-400 mb-8 leading-relaxed italic">Upgrading to Starter Plan.</p>
             
             <button type="button" id="payButton" onclick="payWithPaystack()" class="pay-btn">
                 Confirm Payment
@@ -48,56 +48,45 @@
         async function payWithPaystack() {
             const btn = document.getElementById('payButton');
             btn.disabled = true;
-            btn.innerText = "Verifying...";
+            btn.innerText = "Connecting...";
 
             try {
-                // 1. Get User
                 const { data: { user }, error: authError } = await supabaseClient.auth.getUser();
                 
                 if (authError || !user) { 
-                    alert("Auth Error: " + (authError?.message || "User session not found. Please log in again.")); 
+                    alert("Please log in again to continue."); 
                     btn.disabled = false;
                     btn.innerText = "Confirm Payment";
                     return; 
                 }
 
-                btn.innerText = "Opening Paystack...";
-
-                // 2. Initialize Paystack
-                const handler = PaystackPop.setup({
+                const paystack = new PaystackPop();
+                paystack.newTransaction({
                     key: 'pk_live_ed525c84b668b33982b108f17c1e057e94cb52e3', 
                     email: user.email,
                     amount: 14500 * 100, 
                     currency: 'NGN',
-                    ref: 'CEL-' + Date.now(),
-                    callback: async function(response) {
-                        btn.innerText = "Applying Upgrade...";
+                    onSuccess: async (transaction) => {
+                        btn.innerText = "Upgrading...";
                         
-                        // 3. Update Plan
-                        const { error: dbError } = await supabaseClient
+                        // Update Database
+                        await supabaseClient
                             .from('profiles')
                             .update({ plan: 'Starter' })
                             .eq('id', user.id);
-
-                        if (dbError) {
-                            alert("Payment OK, but Database Error: " + dbError.message);
-                        }
                         
-                        // 4. Telegram Redirect
-                        const message = `Hello Coach Miracle, I have paid ₦14,500 for the Starter Plan.%0AEmail: ${user.email}%0ARef: ${response.reference}`;
+                        // Telegram Redirect
+                        const message = `Hello Coach Miracle, I have paid ₦14,500 for the Starter Plan.%0AEmail: ${user.email}%0ARef: ${transaction.reference}`;
                         window.location.href = `https://t.me/CoachMiracle1?text=${message}`;
                     },
-                    onClose: function() {
+                    onCancel: () => {
                         btn.disabled = false;
                         btn.innerText = "Confirm Payment";
-                        alert('Transaction was closed.');
                     }
                 });
 
-                handler.openIframe();
-
             } catch (err) {
-                alert("Critical System Error: " + err.message);
+                alert("Payment Error: " + err.message);
                 btn.disabled = false;
                 btn.innerText = "Confirm Payment";
             }
