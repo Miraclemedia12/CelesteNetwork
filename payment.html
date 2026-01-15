@@ -11,8 +11,8 @@
         body { font-family: 'Plus Jakarta Sans', sans-serif; background: #000; color: #fff; padding: 20px; }
         .pay-card { background: #0a0a0a; border: 1px solid rgba(0, 255, 85, 0.2); border-radius: 28px; padding: 30px; max-width: 360px; margin: 40px auto; text-align: center; }
         .price-tag { font-size: 32px; font-weight: 900; color: #00ff55; margin: 15px 0; }
-        .pay-btn { background: #f5a623; color: white; width: 100%; padding: 18px; border-radius: 16px; font-weight: 800; text-transform: uppercase; cursor: pointer; transition: 0.3s; width: 100%; }
-        .pay-btn:disabled { background: #333; cursor: not-allowed; }
+        .pay-btn { background: #00a2ff; color: white; width: 100%; padding: 18px; border-radius: 16px; font-weight: 800; text-transform: uppercase; cursor: pointer; transition: 0.3s; width: 100%; border: none; }
+        .pay-btn:disabled { background: #333; cursor: not-allowed; opacity: 0.6; }
     </style>
 </head>
 <body>
@@ -25,19 +25,19 @@
         <div class="pay-card">
             <h2 class="text-lg font-bold text-gray-300">Starter Plan Upgrade</h2>
             <div class="price-tag">₦14,500</div>
-            <p class="text-[12px] text-gray-500 mb-8 italic">Secure payment via Flutterwave.</p>
+            <p class="text-[12px] text-gray-500 mb-8 italic">Secure payment via Paystack.</p>
             
-            <button type="button" id="payButton" onclick="makePayment()" class="pay-btn">
-                Pay Now
+            <button type="button" id="payButton" onclick="payWithPaystack()" class="pay-btn">
+                Confirm & Pay
             </button>
 
             <div class="mt-6 flex items-center justify-center gap-2 opacity-20 text-[10px] uppercase font-bold">
-                <i class="fas fa-lock"></i> Secured by Flutterwave
+                <i class="fas fa-lock"></i> Secured by Paystack
             </div>
         </div>
     </div>
 
-    <script src="https://checkout.flutterwave.com/v3.js"></script>
+    <script src="https://js.paystack.co/v1/inline.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
     <script>
@@ -45,39 +45,38 @@
         const SUPABASE_KEY = 'sb_publishable_S3ryEPuq04Bw8yJ3_LzmxA_qyVKpJPf';
         const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
-        async function makePayment() {
+        async function payWithPaystack() {
             const btn = document.getElementById('payButton');
             btn.disabled = true;
-            btn.innerText = "Connecting...";
+            btn.innerText = "Initializing...";
 
             try {
+                // 1. Get Logged In User
                 const { data: { user }, error: authError } = await supabaseClient.auth.getUser();
                 
                 if (authError || !user) { 
-                    alert("Please log in again to continue."); 
+                    alert("Session expired. Please log in again."); 
                     btn.disabled = false;
-                    btn.innerText = "Pay Now";
+                    btn.innerText = "Confirm & Pay";
                     return; 
                 }
 
-                FlutterwaveCheckout({
-                    public_key: "FLWPUBK-43704d9975cf827a40723d9abbdd00d8-X",
-                    tx_ref: "CEL-" + Date.now(),
-                    amount: 14500,
+                // 2. Open Paystack Inline
+                const handler = PaystackPop.setup({
+                    key: 'pk_live_ed525c84b668b33982b108f17c1e057e94cb52e3', 
+                    email: user.email,
+                    amount: 14500 * 100, // ₦14,500 in Kobo
                     currency: "NGN",
-                    payment_options: "card, banktransfer, ussd",
-                    customer: {
-                        email: user.email,
-                        name: "Celeste Network User",
+                    ref: "CEL-" + Date.now(),
+                    metadata: {
+                        custom_fields: [
+                            { display_name: "Plan", variable_name: "plan", value: "Starter" }
+                        ]
                     },
-                    customizations: {
-                        title: "Celeste Network",
-                        description: "Starter Plan Upgrade",
-                    },
-                    callback: async function (data) {
-                        btn.innerText = "Updating Account...";
+                    callback: async function(response) {
+                        btn.innerText = "Upgrading Account...";
                         
-                        // Update Supabase Database
+                        // 3. Update Supabase Database
                         const { error: dbError } = await supabaseClient
                             .from('profiles')
                             .update({ plan: 'Starter' })
@@ -87,19 +86,22 @@
                             console.error("Database error:", dbError);
                         }
                         
-                        // Telegram Redirect to @CoachMiracle1
-                        const message = `Hello Coach Miracle, I have paid ₦14,500 for the Starter Plan.%0AEmail: ${user.email}%0ATransaction ID: ${data.transaction_id}`;
+                        // 4. Telegram Redirect to @CoachMiracle1
+                        const message = `Hello Coach Miracle, I have paid ₦14,500 for the Starter Plan Upgrade.%0AEmail: ${user.email}%0APaystack Ref: ${response.reference}`;
                         window.location.href = `https://t.me/CoachMiracle1?text=${message}`;
                     },
-                    onclose: function() {
+                    onClose: function() {
                         btn.disabled = false;
-                        btn.innerText = "Pay Now";
-                    },
+                        btn.innerText = "Confirm & Pay";
+                    }
                 });
+
+                handler.openIframe();
+
             } catch (err) {
                 alert("Critical Error: " + err.message);
                 btn.disabled = false;
-                btn.innerText = "Pay Now";
+                btn.innerText = "Confirm & Pay";
             }
         }
     </script>
