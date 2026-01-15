@@ -12,7 +12,7 @@
         .pay-card { background: #0a0a0a; border: 1px solid rgba(0, 255, 85, 0.1); border-radius: 28px; padding: 30px; max-width: 360px; margin: 40px auto; text-align: center; }
         .price-tag { font-size: 32px; font-weight: 900; color: #00ff55; margin: 15px 0; }
         .pay-btn { background: #00a2ff; color: white; width: 100%; padding: 16px; border-radius: 14px; font-weight: 800; text-transform: uppercase; cursor: pointer; transition: 0.3s; }
-        .pay-btn:disabled { background: #555; cursor: not-allowed; }
+        .pay-btn:disabled { background: #444; cursor: not-allowed; opacity: 0.7; }
     </style>
 </head>
 <body>
@@ -25,7 +25,7 @@
         <div class="pay-card">
             <h2 class="text-lg font-bold">Starter Plan</h2>
             <div class="price-tag">₦14,500</div>
-            <p class="text-[12px] text-gray-400 mb-8 leading-relaxed italic">Click below to pay via Paystack. You will be redirected to Admin to confirm your upgrade.</p>
+            <p class="text-[12px] text-gray-400 mb-8 leading-relaxed italic">Confirming your upgrade to Starter Plan.</p>
             
             <button type="button" id="payButton" onclick="payWithPaystack()" class="pay-btn">
                 Confirm Payment
@@ -48,58 +48,56 @@
         async function payWithPaystack() {
             const btn = document.getElementById('payButton');
             btn.disabled = true;
-            btn.innerText = "Loading...";
+            btn.innerText = "Verifying...";
 
             try {
+                // 1. Get User
                 const { data: { user }, error: authError } = await supabaseClient.auth.getUser();
                 
                 if (authError || !user) { 
-                    alert("Please login to continue."); 
-                    window.location.href = 'login.html'; // Adjust this to your login page name
+                    alert("Auth Error: " + (authError?.message || "User session not found. Please log in again.")); 
+                    btn.disabled = false;
+                    btn.innerText = "Confirm Payment";
                     return; 
                 }
 
-                // Initialize Paystack
+                btn.innerText = "Opening Paystack...";
+
+                // 2. Initialize Paystack
                 const handler = PaystackPop.setup({
                     key: 'pk_live_ed525c84b668b33982b108f17c1e057e94cb52e3', 
                     email: user.email,
-                    amount: 14500 * 100, // ₦14,500 in kobo
+                    amount: 14500 * 100, 
                     currency: 'NGN',
-                    ref: 'CEL-' + Math.floor((Math.random() * 1000000000) + 1),
-                    metadata: {
-                        custom_fields: [
-                            { display_name: "User ID", variable_name: "user_id", value: user.id }
-                        ]
-                    },
+                    ref: 'CEL-' + Date.now(),
                     callback: async function(response) {
-                        btn.innerText = "Finalizing...";
+                        btn.innerText = "Applying Upgrade...";
                         
-                        // Update Database
+                        // 3. Update Plan
                         const { error: dbError } = await supabaseClient
                             .from('profiles')
                             .update({ plan: 'Starter' })
                             .eq('id', user.id);
 
                         if (dbError) {
-                            console.error("Database error:", dbError);
+                            alert("Payment OK, but Database Error: " + dbError.message);
                         }
                         
-                        // Redirect to Telegram
+                        // 4. Telegram Redirect
                         const message = `Hello Coach Miracle, I have paid ₦14,500 for the Starter Plan.%0AEmail: ${user.email}%0ARef: ${response.reference}`;
                         window.location.href = `https://t.me/CoachMiracle1?text=${message}`;
                     },
                     onClose: function() {
                         btn.disabled = false;
                         btn.innerText = "Confirm Payment";
-                        alert('Transaction cancelled.');
+                        alert('Transaction was closed.');
                     }
                 });
 
                 handler.openIframe();
 
             } catch (err) {
-                console.error("System Error:", err);
-                alert("Something went wrong. Please check your internet connection.");
+                alert("Critical System Error: " + err.message);
                 btn.disabled = false;
                 btn.innerText = "Confirm Payment";
             }
