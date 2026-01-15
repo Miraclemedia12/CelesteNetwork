@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Payment | Celeste Network</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;800&display=swap');
+        body { font-family: 'Plus Jakarta Sans', sans-serif; background: #000; color: #fff; padding: 20px; }
+        .pay-card { background: #0a0a0a; border: 1px solid rgba(0, 255, 85, 0.1); border-radius: 28px; padding: 30px; max-width: 360px; margin: 40px auto; text-align: center; }
+        .price-tag { font-size: 32px; font-weight: 900; color: #00ff55; margin: 15px 0; }
+        .pay-btn { background: #00a2ff; color: white; width: 100%; padding: 16px; border-radius: 14px; font-weight: 800; text-transform: uppercase; cursor: pointer; }
+    </style>
+</head>
+<body>
+    <div class="max-w-md mx-auto">
+        <div class="flex items-center gap-4 mb-4">
+            <a href="upgrade.html" class="text-gray-500"><i class="fas fa-arrow-left"></i></a>
+            <h1 class="text-xl font-black uppercase italic">Checkout</h1>
+        </div>
+
+        <div class="pay-card">
+            <h2 class="text-lg font-bold">Starter Plan</h2>
+            <div class="price-tag">₦14,500</div>
+            <p class="text-[12px] text-gray-400 mb-8 leading-relaxed italic">Click below to pay via Paystack. You will be redirected to Admin to confirm your upgrade.</p>
+            <button type="button" onclick="payWithPaystack()" class="pay-btn">Confirm Payment</button>
+            <div class="mt-6 flex items-center justify-center gap-2 opacity-30 text-[10px] uppercase font-bold">
+                <i class="fas fa-shield-halved"></i> Secured by Paystack
+            </div>
+        </div>
+    </div>
+
+    <script src="https://js.paystack.co/v1/inline.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script>
+        const SUPABASE_URL = 'https://hwensxsqikohnsxwdxji.supabase.co'; 
+        const SUPABASE_KEY = 'sb_publishable_S3ryEPuq04Bw8yJ3_LzmxA_qyVKpJPf';
+        const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+        async function payWithPaystack() {
+            const { data: { user } } = await supabaseClient.auth.getUser();
+            if (!user) { alert("Please login."); return; }
+
+            let handler = PaystackPop.setup({
+                key: 'pk_live_ed525c84b668b33982b108f17c1e057e94cb52e3', 
+                email: user.email,
+                amount: 14500 * 100,
+                currency: 'NGN',
+                ref: 'CEL-' + Math.floor((Math.random() * 1000000000) + 1),
+                callback: async function(response) {
+                    // Update Database
+                    await supabaseClient.from('profiles').update({ plan: 'Starter' }).eq('id', user.id);
+                    
+                    // Redirect to Telegram
+                    const message = `Hello Coach Miracle, I have paid ₦14,500 for the Starter Plan.%0AEmail: ${user.email}%0ARef: ${response.reference}`;
+                    window.location.href = `https://t.me/CoachMiracle1?text=${message}`;
+                }
+            });
+            handler.openIframe();
+        }
+    </script>
+</body>
+</html>
+
