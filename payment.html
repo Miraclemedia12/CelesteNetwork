@@ -19,13 +19,13 @@
     <div class="max-w-md mx-auto">
         <div class="flex items-center gap-4 mb-4">
             <a href="upgrade.html" class="text-gray-500"><i class="fas fa-arrow-left"></i></a>
-            <h1 class="text-xl font-black uppercase italic">Checkout</h1>
+            <h1 class="text-xl font-black uppercase italic tracking-tighter">Checkout</h1>
         </div>
 
         <div class="pay-card">
             <h2 class="text-lg font-bold text-gray-300">Starter Plan Upgrade</h2>
             <div class="price-tag">₦14,500</div>
-            <p class="text-[12px] text-gray-500 mb-8 italic">Secure payment via Paystack.</p>
+            <p class="text-[12px] text-gray-500 mb-8 italic italic">Securely hosted by Paystack</p>
             
             <button type="button" id="payButton" onclick="payWithPaystack()" class="pay-btn">
                 Confirm & Pay
@@ -45,50 +45,43 @@
         const SUPABASE_KEY = 'sb_publishable_S3ryEPuq04Bw8yJ3_LzmxA_qyVKpJPf';
         const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
-        async function payWithPaystack() {
+        function payWithPaystack() {
             const btn = document.getElementById('payButton');
             btn.disabled = true;
-            btn.innerText = "Initializing...";
+            btn.innerText = "Connecting...";
 
-            try {
-                // 1. Get Logged In User
-                const { data: { user }, error: authError } = await supabaseClient.auth.getUser();
-                
-                if (authError || !user) { 
-                    alert("Session expired. Please log in again."); 
+            // Get User Info
+            supabaseClient.auth.getUser().then(({ data: { user }, error }) => {
+                if (error || !user) {
+                    alert("Please login again to continue.");
                     btn.disabled = false;
                     btn.innerText = "Confirm & Pay";
-                    return; 
+                    return;
                 }
 
-                // 2. Open Paystack Inline
+                // Standard Paystack Pop Setup
                 const handler = PaystackPop.setup({
-                    key: 'pk_live_ed525c84b668b33982b108f17c1e057e94cb52e3', 
+                    key: 'pk_live_ed525c84b668b33982b108f17c1e057e94cb52e3',
                     email: user.email,
-                    amount: 14500 * 100, // ₦14,500 in Kobo
+                    amount: 1450000, // ₦14,500 in kobo
                     currency: "NGN",
-                    ref: "CEL-" + Date.now(),
+                    ref: "CEL-" + Math.floor((Math.random() * 1000000000) + 1),
                     metadata: {
-                        custom_fields: [
-                            { display_name: "Plan", variable_name: "plan", value: "Starter" }
-                        ]
+                        custom_fields: [{ display_name: "User ID", variable_name: "user_id", value: user.id }]
                     },
-                    callback: async function(response) {
+                    callback: function(response) {
                         btn.innerText = "Upgrading Account...";
                         
-                        // 3. Update Supabase Database
-                        const { error: dbError } = await supabaseClient
+                        // Update Database
+                        supabaseClient
                             .from('profiles')
                             .update({ plan: 'Starter' })
-                            .eq('id', user.id);
-
-                        if (dbError) {
-                            console.error("Database error:", dbError);
-                        }
-                        
-                        // 4. Telegram Redirect to @CoachMiracle1
-                        const message = `Hello Coach Miracle, I have paid ₦14,500 for the Starter Plan Upgrade.%0AEmail: ${user.email}%0APaystack Ref: ${response.reference}`;
-                        window.location.href = `https://t.me/CoachMiracle1?text=${message}`;
+                            .eq('id', user.id)
+                            .then(() => {
+                                // Send to Telegram
+                                const msg = "Hello Coach Miracle, I have paid ₦14,500 for the Starter Plan Upgrade.%0AEmail: " + user.email + "%0ARef: " + response.reference;
+                                window.location.href = "https://t.me/CoachMiracle1?text=" + msg;
+                            });
                     },
                     onClose: function() {
                         btn.disabled = false;
@@ -97,12 +90,7 @@
                 });
 
                 handler.openIframe();
-
-            } catch (err) {
-                alert("Critical Error: " + err.message);
-                btn.disabled = false;
-                btn.innerText = "Confirm & Pay";
-            }
+            });
         }
     </script>
 </body>
